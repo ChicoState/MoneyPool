@@ -1,4 +1,4 @@
-#Setting up docker:
+# Setting up docker:
 
 * Step 1: Install Docker   
 * Step 2: Pull Initial Commit files to local computer

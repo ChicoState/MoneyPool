@@ -20,8 +20,19 @@ class RegistrationForm(UserCreationForm):
         label="Email",
         required=True,
         validators=[must_be_unique]
-        )
-
+    )
+    first_name = forms.CharField(
+        label="first_name",
+        required=True
+    )
+    last_name = forms.CharField(
+        label="last_name", 
+        required=True
+    )
+    username = forms.CharField(
+        label="username",
+        required=True
+    )
     class Meta:
         model = User
         fields = ("first_name", "last_name","username", "email",
@@ -30,6 +41,9 @@ class RegistrationForm(UserCreationForm):
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=False)
         user.email = self.cleaned_data["email"]
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.username = self.cleaned_data["username"]
         if commit:
             user.save()
         return user

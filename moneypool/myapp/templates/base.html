@@ -6,8 +6,9 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
+    <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static "css/foundation.css" %}">
+    {% block css %}{% endblock%}
   </head>
   <body>
     <!--Navigation-->
@@ -16,6 +17,7 @@
         <h1 class="text-center">Welcome to {{ page_name }}</h1>
       {% endblock header %}
       </header>
+  
     {% block content %}
        
     {% endblock %}

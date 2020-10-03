@@ -5,11 +5,17 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block header%}
-   <h1 class="text-center">Hello {{ data }}</h1>
+   <h1 class="text-center">Hello {{ name }}</h1>
+   <p class="text-center">You have successfully logged in!</p>
 {%endblock header%}
 
 {% block content %}
-   <p class="text-center">You have successfully logged in!</p>
+   <h2 class="text-left">My Trips</h2>
+   <ul>
+      {% for i in data %}
+          <li><p>Name: {{i.name}}</p><p>Cost: {{i.cost}}</p><p>Date: {{i.date}}</p></li>
+      {% endfor %}
+   </ul>
 {% endblock content %} 
     
 

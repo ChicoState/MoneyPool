@@ -53,3 +53,7 @@ def register(request):
     }
     return render(request, "registration/register.html", context=context)
 
+#Add a Trip
+#def tripAdd(request):
+
+#    return render(request, "tripAdd/tripAdd.html", context=context)

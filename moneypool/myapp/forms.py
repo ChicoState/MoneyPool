@@ -48,14 +48,34 @@ class RegistrationForm(UserCreationForm):
             user.save()
         return user
 
-class addTrip(forms.Form):
+class EventForm(forms.Form):
     location = forms.CharField(
         label="Where are we going?",
-        max_length=50,
+        max_length=30,
         required=True,
     )
     date = forms.DateField(
         label="When are we going?",
-        
-        required=False
+        widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
     )
+    attendants = forms.IntegerField(
+        label="How many people are attending?",
+        required=False,
+    )
+    invited = forms.IntegerField(
+        label="How many people are invited?",
+        required=False,
+    )
+    def save(self, request, commit=True):
+        trip_instance = models.Event(
+            location = self.cleaned_data["location"],
+            date = self.cleaned_data["date"],
+            attendants = self.cleaned_data["attendants"],
+            invited = self.cleaned_data["invited"],
+            author = request.user
+        )
+        if commit:
+            trip_instance.save()
+        return trip_instance
+
+

@@ -1,14 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 import datetime
 # Create your models here.
         
-class Event:
-    location = "string"
-    date = datetime.datetime.now()
-    attendants = 0
-    invites = []
-    invited = 0
+class Event(models.Model):
+    location = models.CharField(max_length = 30)
+    date = models.DateField()
+    attendants = models.IntegerField()
+    #invites = []     Lets wait on this one. Maybe we can normalize tables so no array
+    invited = models.IntegerField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
-def createEvent():
-    Event.location = input("Where are you going?: ")
-    Event.date = input("When are you going?: ")
+    def __str__(self):
+        return self.location + " - " + self.date.strftime("%m/%d/%Y")
+#def createEvent():
+#    Event.location = input("Where are you going?: ")
+#    Event.date = input("When are you going?: ")
+

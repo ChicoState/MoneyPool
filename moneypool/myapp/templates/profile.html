@@ -10,12 +10,25 @@
 {%endblock header%}
 
 {% block content %}
-   <h2 class="text-left">My Trips</h2>
-   <ul>
-      {% for i in data %}
-          <li><p>Name: {{i.name}}</p><p>Cost: {{i.cost}}</p><p>Date: {{i.date}}</p></li>
-      {% endfor %}
-   </ul>
+   <div style="width:50%">
+      <h2 class="text-center">My Trips</h2>
+      <table style="width:100%">
+         <tr>
+            <th>Event Name</th>
+            <th>Event Date</th>
+            <th># of Attendees</th>
+            <th># Invited</th>
+         </tr>
+         {% for i in data %}
+            <tr>
+               <td>{{i.location}}</td>
+               <td>{{i.date}}</td>
+               <td>{{i.attendants}}</td>
+               <td>{{i.invited}}</td>
+            </tr>
+         {% endfor %}
+      </table>
+   </div>
 {% endblock content %} 
     
 

@@ -9,12 +9,14 @@
 {% endblock header %}
 
 {% block content %}
+
 <div class="grid-x grid-padding-x">
   <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
-    <form action="/index/", method ="post">
+    <form action="/addtrip/", method ="post">{% csrf_token %}
         {{form}}
-            <input type="submit" value="Create New Trip"/>
+            <input type="submit" value="Create New Trip" class="button"/>
     </form>
+    <p>{{status}}</p>
   </div>
 </div>
 

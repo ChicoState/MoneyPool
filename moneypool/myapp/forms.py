@@ -48,13 +48,14 @@ class RegistrationForm(UserCreationForm):
             user.save()
         return user
 
-class TripsAdd():
-    location = forms.forms.CharField(
+class addTrip(forms.Form):
+    location = forms.CharField(
         label="Where are we going?",
-        max_length=50, 
+        max_length=50,
         required=True,
     )
-    date = forms.forms.DateField(
+    date = forms.DateField(
         label="When are we going?",
+        
         required=False
     )

@@ -54,7 +54,11 @@ def register(request):
     return render(request, "registration/register.html", context=context)
 
 #Add a Trip
-def tripAdd(request):
-    if request.method == "POST":
-        form_instance = forms.TripsAdd(request.POST)
-    return render(request, "tripAdd/trip.html", context=context)
+def addTrip(request):
+    add_trip = forms.addTrip(request)
+    context = {
+        "title":"New Trip",
+        "page_name":"Moneypool",
+        "form": add_trip,
+    }
+    return render(request, "trip.html", context=context)

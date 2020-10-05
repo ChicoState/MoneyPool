@@ -10,15 +10,12 @@
 
 {% block content %}
 <div class="grid-x grid-padding-x">
-  <!-- <div class="large-4 medium-4 small-12 cell"></div> -->
   <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
-
-    <form action="/register/" method="post">
-        <h2 class="text-left"> Trip Location</h2>
-            <input type="location" class="button expanded" value="location" />
-        <h3 class="text-left"> Trip Date</h3>
-            <input type="date" class="button expanded" value="date" />
+    <form action="/index/", method ="post">
+        {{form}}
+            <input type="submit" value="Create New Trip"/>
     </form>
   </div>
 </div>
+
 {% endblock content %}

@@ -10,6 +10,7 @@ class Event(models.Model):
     #invites = []     Lets wait on this one. Maybe we can normalize tables so no array
     invited = models.IntegerField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    public = models.BooleanField(default = False)
 
     def __str__(self):
         return self.location + " - " + self.date.strftime("%m/%d/%Y")

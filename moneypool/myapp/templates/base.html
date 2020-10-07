@@ -6,8 +6,8 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static "css/bootstrap1.min.css" %}">
     <link rel="stylesheet" href="{% static "css/foundation.css" %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static "css/sidebar.css" %}">
     {% block css %}{% endblock%}
   </head>
@@ -23,11 +23,10 @@
     {% block content %}
 
     {% endblock %}
-    <script src="{% static "js/jquery.js" %}"></script>
-    <script src="{% static "js/bootstrap.js" %}"></script>
-      <!--<script src="{% static "js/foundation.js" %}"></script>-->
-    <script src="{% static "js/bootstrap.bundle.min.js" %}"</script>
-    <!--<script src="{% static "js/app.js" %}"></script> -->
+    <script src="{% static "js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "js/popper.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/foundation.js" %}"></script>
     {% block scripts %}
     {% endblock %}
   </body>

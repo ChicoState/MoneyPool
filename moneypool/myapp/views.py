@@ -100,7 +100,7 @@ def viewTrips_view(request):
                 "title":"Find Trips",
                 "page_name":"Moneypool",
                 "name": request.user,
-                "data": trip_list
+                "data": public_trips
             }
             return render(request, "publicTrips.html", context=context)
     else:    

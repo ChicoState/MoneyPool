@@ -14,6 +14,7 @@ def index(request):
             if request.method == "GET":
                 all_trips = models.Event.objects.all().order_by('date')
                 trip_list = []
+                friends_list = []
                 for e in all_trips:
                     if e.author == request.user:
                         trip_list += [{
@@ -31,8 +32,8 @@ def index(request):
                     "data": trip_list
                 }
                 return render(request, "profile.html", context=context)
-            else:
-                return redirect('/login/')
+        else:    
+            return redirect('/login/')
 
 
 
@@ -76,3 +77,31 @@ def addTrip_form_view(request):
         "form": form_instance,
     }
     return render(request, "trip.html", context=context)
+
+#View public and friend trips
+@login_required(login_url='/login/')
+def viewTrips_view(request):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            all_trips = models.Event.objects.all().order_by('date')
+            public_trips = []
+            friends_list = []
+            for e in all_trips:
+                if e.author != request.user:
+                    if e.public == True:
+                        public_trips += [{
+                            "location":e.location,
+                            "author": e.author,
+                            "date":e.date,
+                            "attendants":e.attendants,
+                            "invited":e.invited
+                        }]
+            context = {
+                "title":"Find Trips",
+                "page_name":"Moneypool",
+                "name": request.user,
+                "data": trip_list
+            }
+            return render(request, "publicTrips.html", context=context)
+    else:    
+        return redirect('/login/')

@@ -58,20 +58,18 @@ class EventForm(forms.Form):
         label="When are we going?",
         widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
     )
-    attendants = forms.IntegerField(
-        label="How many people are attending?",
-        required=False,
+    public = forms.BooleanField(
+        label="Can anybody join this event?",
+        required=True
     )
-    invited = forms.IntegerField(
-        label="How many people are invited?",
-        required=False,
-    )
+
     def save(self, request, commit=True):
         trip_instance = models.Event(
             location = self.cleaned_data["location"],
             date = self.cleaned_data["date"],
-            attendants = self.cleaned_data["attendants"],
-            invited = self.cleaned_data["invited"],
+            attendants = 0,
+            invited = 0,
+            public = self.cleaned_data["public"],
             author = request.user
         )
         if commit:

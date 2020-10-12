@@ -5,30 +5,32 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block header%}
-   <h1 class="text-center">Hello {{ name }}</h1>
-   <p class="text-center">You have successfully logged in!</p>
+   <h1 class="text-center text-dark">Hello {{ name }}</h1>
 {%endblock header%}
 
 {% block content %}
-   <div style="width:50%">
-      <h2 class="text-center">My Trips</h2>
-      <table style="width:100%">
-         <tr>
-            <th>Event Name</th>
-            <th>Event Date</th>
-            <th># of Attendees</th>
-            <th># Invited</th>
-         </tr>
-         {% for i in data %}
-            <tr>
-               <td>{{i.location}}</td>
-               <td>{{i.date}}</td>
-               <td>{{i.attendants}}</td>
-               <td>{{i.invited}}</td>
-            </tr>
-         {% endfor %}
-      </table>
+   <div class="container">
+      <div class="row">
+         <div class="col-md-3"></div>
+         <div class="col-md-9">
+            <h2 class="text-center">My Trips</h2>
+            <table class="table table-hover table-bordered">
+               <tr class="thead-dark">
+                  <th>Event Name</th>
+                  <th>Event Date</th>
+               </tr>
+               {% for i in data %}
+                  <tr>
+                     <td>{{i.location}}</td>
+                     <td>{{i.date}}</td>
+                  </tr>
+               {% endfor %}
+            </table>
+         </div>
+      </div>
    </div>
+   <!-- ADD MORE CONTAINERS HERE -->
+   
 {% endblock content %} 
     
 

@@ -97,7 +97,7 @@ def viewTrips_view(request):
                             "invited":e.invited
                         }]
             context = {
-                "title":"Find Trips",
+                "title":"Search for A Trip",
                 "page_name":"Moneypool",
                 "name": request.user,
                 "data": public_trips

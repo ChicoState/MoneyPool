@@ -1,3 +1,4 @@
+{% extends "base.html"%}
 {% load static %}
 
 {% block title %}{{title}}{% endblock %}
@@ -7,27 +8,32 @@
 {%endblock header%}
 
 {% block content %}
-   <div style="width:50%">
-      <h2 class="text-center">Public Trips</h2>
-      <table style="width:100%">
-         <tr>
-            <th>Event Name</th>
-            <th>Event Host</th>
-            <th>Event Date</th>
-            <th># of Attendees</th>
-            <th># Invited</th>
-         </tr>
-         {% for i in data %}
+<div class="container">
+   <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-9">
+         <h2 class="text-center">Public Trips</h2>
+         <table style="width:100%">
             <tr>
-               <td>{{i.location}}</td>
-               <td>{{i.author}}</td>
-               <td>{{i.date}}</td>
-               <td>{{i.attendants}}</td>
-               <td>{{i.invited}}</td>
+               <th>Name</th>
+               <th>Host</th>
+               <th>Date</th>
+               <th>Attendees</th>
+               <th>Invited</th>
             </tr>
-         {% endfor %}
-      </table>
+            {% for i in data %}
+               <tr>
+                  <td>{{i.location}}</td>
+                  <td>{{i.author}}</td>
+                  <td>{{i.date}}</td>
+                  <td>{{i.attendants}}</td>
+                  <td>{{i.invited}}</td>
+               </tr>
+            {% endfor %}
+         </table>
+      </div>
    </div>
+</div>
 {% endblock content %} 
 
 

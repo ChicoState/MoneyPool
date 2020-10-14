@@ -76,7 +76,7 @@ def addTrip_form_view(request):
         "status":status,
         "form": form_instance,
     }
-    return render(request, "trip.html", context=context)
+    return render(request, "addtrip.html", context=context)
 
 #View public and friend trips
 @login_required(login_url='/login/')
@@ -102,6 +102,6 @@ def viewTrips_view(request):
                 "name": request.user,
                 "data": public_trips
             }
-            return render(request, "publicTrips.html", context=context)
+            return render(request, "searchTrips.html", context=context)
     else:    
         return redirect('/login/')

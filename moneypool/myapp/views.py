@@ -28,7 +28,7 @@ def index(request):
                 context = {
                     "title":"My Profile",
                     "page_name":"Moneypool",
-                    "name": request.user,
+                    "name": request.user.first_name,
                     "data": trip_list
                 }
                 return render(request, "profile.html", context=context)

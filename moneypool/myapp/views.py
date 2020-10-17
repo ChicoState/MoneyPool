@@ -107,3 +107,22 @@ def viewTrips_view(request):
             return render(request, "searchTrips.html", context=context)
     else:    
         return redirect('/login/')
+
+def findUsers(request):
+    if request.method == "GET":
+        all_users = User.objects.all()
+        user_list = []
+        for u in all_users:
+            if u.username != request.user.username:
+                user_list += [{
+                    "username": u.username,
+                    "first_name": u.first_name,
+                    "last_name": u.last_name,
+                    "id": u.id
+                }]
+        context = {
+            "title": "Find Users",
+            "page_name": "MoneyPool",
+            "user_list": user_list
+        }
+        return render(request, "findUsers.html", context=context)

@@ -22,9 +22,9 @@
        <div class="col-md-3"></div>
        <div class="col-md-9">
            <ul>
-            {% for i in data %}
+            {% for i in user_list %}
                <li>
-                  <a href="/profile">{{i.name}}</a>
+                  <a href="/profile">{{i.username}}</a>
                </li>
             {% endfor %}
            </ul>

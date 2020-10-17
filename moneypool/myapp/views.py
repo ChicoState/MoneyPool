@@ -3,6 +3,8 @@ from . import models, forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from friendship.models import Friend, Follow, Block
+
 #from . import forms
 import datetime #for testing mytrips
 # Create your views here.

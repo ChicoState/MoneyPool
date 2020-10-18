@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}
+    <h1 class="text-center text-dark">{{ title }}</h1>
+{%endblock header%}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+       <div class="col-md-3"></div>
+       <div class="col-md-9">
+            <form action="/findUsers" method="get">
+                <input name="q" type="text" placeholder="Search...">
+            </form>
+       </div>
+    </div>
+    <div class="row">
+       <div class="col-md-3"></div>
+       <div class="col-md-9">
+           <ul>
+            {% for i in data %}
+               <li>
+                  <a href="/profile">{{i.name}}</a>
+               </li>
+            {% endfor %}
+           </ul>
+       </div>
+    </div>
+</div>
+{% endblock %}

@@ -60,7 +60,7 @@ class EventForm(forms.Form):
     )
     public = forms.BooleanField(
         label="Can anybody join this event?",
-        required=True
+        required=False
     )
 
     def save(self, request, commit=True):

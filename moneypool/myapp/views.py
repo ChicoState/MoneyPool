@@ -35,8 +35,6 @@ def index(request):
         else:    
             return redirect('/login/')
 
-
-
 #logout
 def logout_view(request):
     logout(request)
@@ -77,6 +75,21 @@ def addTrip_form_view(request):
         "form": form_instance,
     }
     return render(request, "addtrip.html", context=context)
+
+#Trip details
+def tripDetails_view(request):
+    if request.method == "GET":
+        if request.user.is_authenticated:
+            tripname = models.Event.objects.all()
+            
+            context = {
+                "title":"Trip Details",
+                "page_name":"Moneypool",
+                "trip_name":tripname,
+            }
+            return render(request, "tripdetails.html", context=context)
+        else:
+            return redirect('/login/')
 
 #View public and friend trips
 @login_required(login_url='/login/')

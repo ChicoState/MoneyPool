@@ -14,7 +14,4 @@ class Event(models.Model):
 
     def __str__(self):
         return self.location + " - " + self.date.strftime("%m/%d/%Y")
-#def createEvent():
-#    Event.location = input("Where are you going?: ")
-#    Event.date = input("When are you going?: ")
 

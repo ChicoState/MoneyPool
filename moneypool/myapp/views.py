@@ -3,6 +3,8 @@ from . import models, forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.http import HttpResponse
 #from . import forms
 import datetime #for testing mytrips
 # Create your views here.
@@ -24,7 +26,7 @@ def index(request):
                             "invited":e.invited
                         }]
 
-                
+
                 context = {
                     "title":"My Profile",
                     "page_name":"Moneypool",
@@ -32,7 +34,7 @@ def index(request):
                     "data": trip_list
                 }
                 return render(request, "profile.html", context=context)
-        else:    
+        else:
             return redirect('/login/')
 
 
@@ -103,5 +105,21 @@ def viewTrips_view(request):
                 "data": public_trips
             }
             return render(request, "searchTrips.html", context=context)
-    else:    
+    else:
         return redirect('/login/')
+
+'''
+@login_required(login_url='/login/')
+def suggestions_list(request):
+    all_suggestions = Suggestions.objects.all()
+
+
+
+CREATING DICTIONARY HERE
+
+    print(params)
+    context = {
+        'suggestions': suggestions,
+
+    }
+'''

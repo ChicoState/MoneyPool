@@ -29,6 +29,7 @@ def index(request):
                 
                 context = {
                     "title":"My Profile",
+                    "tripTitle": "My Trips",
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
                     "data": trip_list
@@ -37,7 +38,35 @@ def index(request):
         else:    
             return redirect('/login/')
 
+def profile2(request, id):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            all_users = User.objects.all()
+            all_trips = models.Event.objects.all().order_by('date')
+            user = ""
+            for u in all_users:
+                if u.id == id:
+                    user = u
 
+            trip_list = []
+            for e in all_trips:
+                if e.author == user:
+                    trip_list += [{
+                        "location":e.location,
+                        "date":e.date,
+                        "attendants":e.attendants,
+                        "invited":e.invited
+                    }]
+
+            
+            context = {
+                "title":user.username,
+                "tripTitle": user.first_name + "'s Trips",
+                "page_name":"Moneypool",
+                "name": user.first_name,
+                "data": trip_list
+            }
+            return render(request, "profile.html", context=context)
 
 #logout
 def logout_view(request):

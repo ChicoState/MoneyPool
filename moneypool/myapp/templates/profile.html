@@ -6,6 +6,9 @@
 
 {% block header%}
    <h1 class="text-center text-dark">{{ name }}</h1>
+   {% if button %}
+      <input type="submit" class="button expanded" value="Add Friend"/>
+   {% endif %}
 {%endblock header%}
 
 {% block content %}

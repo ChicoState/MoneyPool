@@ -44,9 +44,11 @@ def profile2(request, id):
             all_users = User.objects.all()
             all_trips = models.Event.objects.all().order_by('date')
             user = ""
+            button = 0
             for u in all_users:
                 if u.id == id:
                     user = u
+                    button = id
 
             trip_list = []
             for e in all_trips:
@@ -64,7 +66,9 @@ def profile2(request, id):
                 "tripTitle": user.first_name + "'s Trips",
                 "page_name":"Moneypool",
                 "name": user.first_name,
-                "data": trip_list
+                "data": trip_list, 
+                "button": button
+
             }
             return render(request, "profile.html", context=context)
 

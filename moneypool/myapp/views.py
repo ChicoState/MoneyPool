@@ -110,13 +110,20 @@ def viewTrips_view(request):
 
 
 @login_required(login_url='/login/')
-def suggestions_list(request):
-    all_suggestions = Suggestions.objects.all()
+def suggestionIndex(request):
+    latest_question_list = models.Question.objects.order_by('-pub_date')[:5]
+    output = ', '.join([p.question_text for p in latest_question_list])
+    return HttpResponse(output)
 
+@login_required(login_url='/login/')
+def suggestionDetail(request, question_id):
+    return HttpResponse("You're looking at question %s." % question_id)
 
-#CREATING DICTIONARY HERE
+@login_required(login_url='/login/')
+def suggestionResults(request, question_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % question_id)
 
-    context = {
-        'suggestions': suggestions,
-
-    }
+@login_required(login_url='/login/')
+def suggestionVote(request, question_id):
+    return HttpResponse("You're voting on question %s." % question_id)

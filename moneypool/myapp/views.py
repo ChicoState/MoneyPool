@@ -108,18 +108,15 @@ def viewTrips_view(request):
     else:
         return redirect('/login/')
 
-'''
+
 @login_required(login_url='/login/')
 def suggestions_list(request):
     all_suggestions = Suggestions.objects.all()
 
 
+#CREATING DICTIONARY HERE
 
-CREATING DICTIONARY HERE
-
-    print(params)
     context = {
         'suggestions': suggestions,
 
     }
-'''

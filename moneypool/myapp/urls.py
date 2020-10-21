@@ -13,6 +13,6 @@ urlpatterns = [
     path('addtrip/', views.addTrip_form_view),
     path('viewtrips/', views.viewTrips_view),
     path('profile/', views.index),
-    path('suggestions/', views.suggestions, name='Suggest'),
-    path('suggestions/<suggestion_id>/', views.vote, name='Vote'),
+    #path('suggestions/', views.suggestions),
+    #path('suggestions/<suggestion_id>/', views.vote),
 ]

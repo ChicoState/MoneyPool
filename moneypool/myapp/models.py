@@ -20,12 +20,16 @@ class Event(models.Model):
 #    Event.date = input("When are you going?: ")
 
 class Suggestion(models.Model):
-    suggestion = models.textField()
+    suggestion = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    dateSuggestion = models.DateTimeField(default=timezone.now)
+    dateSuggestion = models.DateField()
+
+    @property
+    def get_choice_count(self):
+        return self.vote_set.count()
 
     def __str__(self):
-        return self.suggestion
+        return self.text
 
 class suggestionChoice(models.Model):
     suggestion = models.ForeignKey(Suggestion, on_delete=models.CASCADE)

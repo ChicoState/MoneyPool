@@ -9,6 +9,21 @@ from friendship.models import Friend, Follow, Block
 import datetime #for testing mytrips
 # Create your views here.
 
+def sendFR(request, id):
+    ctx = {"to_username": to_username}
+
+    if request.method == "POST":
+        to_user = user_model.objects.get(username=to_username)
+        from_user = request.user
+        try:
+            Friend.objects.add_friend(from_user, to_user)
+        except AlreadyExistsError as e:
+            ctx["errors"] = ["%s" % e]
+        else:
+            return redirect("friendship_request_list")
+
+    return render(request, template_name, ctx)
+
 #Login View
 @login_required(login_url='/login/')
 def index(request):
@@ -44,11 +59,11 @@ def profile2(request, id):
             all_users = User.objects.all()
             all_trips = models.Event.objects.all().order_by('date')
             user = ""
-            button = 0
+            button = ""
             for u in all_users:
                 if u.id == id:
                     user = u
-                    button = id
+                    button = 1
 
             trip_list = []
             for e in all_trips:
@@ -67,7 +82,9 @@ def profile2(request, id):
                 "page_name":"Moneypool",
                 "name": user.first_name,
                 "data": trip_list, 
-                "button": button
+                "button": button,
+                "from": request.user.id,
+                "to" : user.username
 
             }
             return render(request, "profile.html", context=context)

@@ -8,7 +8,7 @@
 {% block header%}
    <h1 class="text-center text-dark">{{ name }}</h1>
    {% if button %}
-      <form action="/friendship/friend/add/{{to}}/" method='GET'> {% csrf_token %}
+      <form action="/friendship/friend/add/{{to}}/" method='POST'> {% csrf_token %}
          <input type="submit" class="button expanded" value="Add Friend"/>
       </form>
    {% endif %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+    {% if latest_question_list %}
+        <tr>
+        {% for question in latest_question_list %}
+            <td><a href="/suggestions/{{ question.id }}/">{{ question.question_text }}</a></td>
+        {% endfor %}
+        </tr>
+    {% else %}
+        <p>No polls are available.</p>
+    {% endif %}
+
+{% endblock body %}

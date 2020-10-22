@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.http import Http404
 #from . import forms
 import datetime #for testing mytrips
 # Create your views here.
@@ -110,14 +111,20 @@ def viewTrips_view(request):
 
 
 @login_required(login_url='/login/')
-def suggestionIndex(request):
-    latest_question_list = models.Question.objects.order_by('-pub_date')[:5]
-    output = ', '.join([p.question_text for p in latest_question_list])
-    return HttpResponse(output)
+def suggestionIndex(request): #suggestion list
+    latest_question_list = models.Question.objects.all().order_by('id')
+    context = {
+        'latest_question_list': latest_question_list
+    }
+    return render(request, 'suggestionIndex.html', context=context)
 
 @login_required(login_url='/login/')
 def suggestionDetail(request, question_id):
-    return HttpResponse("You're looking at question %s." % question_id)
+    try:
+        question = models.Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("Question does not exist")
+        return render(request, 'suggestionDetail.html', {'question': question})
 
 @login_required(login_url='/login/')
 def suggestionResults(request, question_id):

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, HttpResponseRedirect
+from django.contrib import messages
 
 from friendship.exceptions import AlreadyExistsError
 from friendship.models import Block, Follow, Friend, FriendshipRequest
@@ -54,10 +55,12 @@ def friendship_add_friend(
             Friend.objects.add_friend(from_user, to_user)
         except AlreadyExistsError as e:
             ctx["errors"] = ["%s" % e]
+            messages.error(request, "%s" % e)
         else:
-            return redirect("/profile/")
+            messages.success(request, "Friend Request Sent!")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-    return render(request, template_name, ctx)
 
 
 @login_required

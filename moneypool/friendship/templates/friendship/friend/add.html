@@ -2,7 +2,7 @@
 {% if errors %}<p>{{ errors|join:", " }}</p>{% endif %}
 <form method="POST">
 {% csrf_token %}
-<input type="hidden" name="to_username" value="{{ to }}" />
-<input type="submit" value="add {{ to }} as a friend" />
+    <input type="hidden" name="to_username" value="{{ to }}" />
+    <input type="submit" value="add {{ to }} as a friend" />
 </form>
 {% endif %}

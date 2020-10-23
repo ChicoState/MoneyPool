@@ -7,7 +7,7 @@
 
 {% block header%}
    <h1 class="text-center text-dark">{{ name }}</h1>
-   {% if button %}
+   {% if not arefriends and button and not sentreqs %}
       <form action="/friendship/friend/add/{{to}}/" method='POST'> {% csrf_token %}
          <input type="submit" class="button expanded" value="Add Friend"/>
       </form>
@@ -47,7 +47,11 @@
             {% if not button %}
                <h2 class="text-center">Friend Requests</h2>
                {% friend_requests request.user %}
+               <h2>Friends</h2>
+               {% friends request.user %}
+
             {% endif %}
+            
          </div>
       </div>
    </div>

@@ -71,11 +71,7 @@ def friendship_accept(request, friendship_request_id):
             request.user.friendship_requests_received, id=friendship_request_id
         )
         f_request.accept()
-        return redirect("friendship_view_friends", username=request.user.username)
-
-    return redirect(
-        "friendship_requests_detail", friendship_request_id=friendship_request_id
-    )
+        return redirect("/profile")
 
 
 @login_required

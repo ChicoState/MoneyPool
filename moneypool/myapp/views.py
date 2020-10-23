@@ -60,10 +60,16 @@ def profile2(request, id):
             all_trips = models.Event.objects.all().order_by('date')
             user = ""
             button = ""
+            sentreqs = 0
             for u in all_users:
                 if u.id == id:
                     user = u
                     button = 1
+            arefriends = Friend.objects.are_friends(request.user, user) == True
+            allFRs = Friend.objects.requests(request.user)
+            for f in allFRs:
+                if f.from_user.id == id:
+                    sentreqs = 1
 
             trip_list = []
             for e in all_trips:
@@ -84,7 +90,9 @@ def profile2(request, id):
                 "data": trip_list, 
                 "button": button,
                 "from": request.user.id,
-                "to" : user.username
+                "to" : user.username,
+                "arefriends" : arefriends,
+                "sentreqs" : sentreqs
 
             }
             return render(request, "profile.html", context=context)

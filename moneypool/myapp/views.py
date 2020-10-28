@@ -28,7 +28,7 @@ def index(request):
                 context = {
                     "title":"My Profile",
                     "page_name":"Moneypool",
-                    "name": request.user,
+                    "name": request.user.first_name,
                     "data": trip_list
                 }
                 return render(request, "profile.html", context=context)
@@ -74,7 +74,7 @@ def addTrip_form_view(request):
         "status":status,
         "form": form_instance,
     }
-    return render(request, "trip.html", context=context)
+    return render(request, "addtrip.html", context=context)
 
 #Trip details
 def tripDetails_view(request):
@@ -115,6 +115,6 @@ def viewTrips_view(request):
                 "name": request.user,
                 "data": public_trips
             }
-            return render(request, "publicTrips.html", context=context)
+            return render(request, "searchTrips.html", context=context)
     else:    
         return redirect('/login/')

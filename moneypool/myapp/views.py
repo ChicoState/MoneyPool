@@ -112,7 +112,7 @@ def viewTrips_view(request):
 
 @login_required(login_url='/login/')
 def suggestionIndex(request): #suggestion list
-    latest_question_list = models.Question.objects.all().order_by('id')
+    latest_question_list = models.Question.objects.all().order_by('pub_date')
     context = {
         'latest_question_list': latest_question_list
     }
@@ -122,9 +122,9 @@ def suggestionIndex(request): #suggestion list
 def suggestionDetail(request, question_id):
     try:
         question = models.Question.objects.get(pk=question_id)
-    except Question.DoesNotExist:
+    except models.Question.DoesNotExist:
         raise Http404("Question does not exist")
-        return render(request, 'suggestionDetail.html', {'question': question})
+    return render(request, 'suggestionDetail.html', {'question': question})
 
 @login_required(login_url='/login/')
 def suggestionResults(request, question_id):

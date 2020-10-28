@@ -1,15 +1,33 @@
 {% extends "base.html" %}
 
-{% block body %}
+{% load static %}
 
-    {% if latest_question_list %}
-        <ul>
-        {% for question in latest_question_list %}
-            <li><a href="/suggestions/{{ question.id }}/">{{ question.question_text }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No polls are available.</p>
-    {% endif %}
+{% block title %}{{title}}{% endblock %}
 
-{% endblock body %}
+{% block header %}
+    <h1 class="text-center text-dark">{{ title }}</h1>
+{% endblock header %}
+
+{% block content %}
+
+<div class="grid-x grid-padding-x">
+  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
+    <h1>{{ question.question_text }}</h1>
+
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <form action="{% url 'suggestions:vote' question.id %}" method="post">
+	    {% csrf_token %}
+	    {% for choice in question.choice_set.all %}
+	        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+	        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+	    {% endfor %}
+	    <input type="submit" value="Vote" />
+    </form>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+
+{% endblock script %}

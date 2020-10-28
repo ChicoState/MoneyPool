@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% block body %}
+
+
+{% block content %}
+
+<div class="grid-x grid-padding-x">
+  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
 
     {% if latest_question_list %}
         <tr>
@@ -9,7 +14,10 @@
         {% endfor %}
         </tr>
     {% else %}
-        <p>No polls are available.</p>
+        <p>No suggestions are available.</p>
     {% endif %}
 
-{% endblock body %}
+  </div>
+</div>
+
+{% endblock content %}

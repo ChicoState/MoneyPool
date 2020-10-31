@@ -24,7 +24,7 @@ def sendFR(request, id):
 
     return render(request, template_name, ctx)
 
-#Login View
+#Login View Basic Profile
 @login_required(login_url='/login/')
 def index(request):
         if request.user.is_authenticated:
@@ -32,6 +32,12 @@ def index(request):
                 all_trips = models.Event.objects.all().order_by('date')
                 trip_list = []
                 friends_list = []
+                fromreqs = 0  # user has received a request
+                allFRs = Friend.objects.requests(request.user)
+                for f in allFRs:
+                    if f.to_user.id == request.user.id:
+                        fromreqs += 1
+                
                 for e in all_trips:
                     if e.author == request.user:
                         trip_list += [{
@@ -47,12 +53,14 @@ def index(request):
                     "tripTitle": "My Trips",
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
-                    "data": trip_list
+                    "data": trip_list,
+                    "fromreqs": fromreqs
                 }
                 return render(request, "profile.html", context=context)
         else:    
             return redirect('/login/')
 
+# Profile view for a non-logged-in user
 def profile2(request, id):
     if request.user.is_authenticated:
         if request.method == "GET":
@@ -60,7 +68,7 @@ def profile2(request, id):
             all_trips = models.Event.objects.all().order_by('date')
             user = ""
             button = ""
-            sentreqs = 0
+            sentreqs = 0  # user has sent a request
             for u in all_users:
                 if u.id == id:
                     user = u
@@ -70,6 +78,8 @@ def profile2(request, id):
             for f in allFRs:
                 if f.from_user.id == id:
                     sentreqs = 1
+                if f.to_user.id == id:
+                    fromreqs = 1
 
             trip_list = []
             for e in all_trips:

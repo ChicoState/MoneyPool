@@ -82,7 +82,7 @@ def friendship_reject(request, friendship_request_id):
             request.user.friendship_requests_received, id=friendship_request_id
         )
         f_request.reject()
-        return redirect("friendship_request_list")
+        return redirect("/profile")
 
     return redirect(
         "friendship_requests_detail", friendship_request_id=friendship_request_id

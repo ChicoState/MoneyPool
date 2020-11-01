@@ -59,7 +59,7 @@ class EventForm(forms.Form):
         widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
     )
     public = forms.BooleanField(
-        label="Can anybody join this event?",
+        label="Click if any of your friends can join",
         required=False
     )
 

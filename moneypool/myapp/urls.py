@@ -17,4 +17,7 @@ urlpatterns = [
     path('profile/<int:id>', views.profile2),
     path('sendRequest/<int:id>', views.sendFR)
     path('tripdetails/<int:tripID>/', views.tripDetails_view)
+    path('sendRequest/<int:id>', views.sendFR),
+    path('populateTables/', views.populateTrips),
+    path('populateUsers/', views.populateUsers)
 ]

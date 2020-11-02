@@ -54,7 +54,7 @@
                </tr>
                {% for i in data %}
                   <tr>
-                     <td>{{i.location}}</td>
+                     <td><a href="/tripdetails/{{i.id}}">{{i.location}}</a></td>
                      <td>{{i.date}}</td>
                   </tr>
                {% endfor %}

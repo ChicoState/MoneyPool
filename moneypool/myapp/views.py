@@ -44,7 +44,8 @@ def index(request):
                             "location":e.location,
                             "date":e.date,
                             "attendants":e.attendants,
-                            "invited":e.invited
+                            "invited":e.invited,
+                            "id":e.id
                         }]
 
                 
@@ -102,15 +103,21 @@ def addTrip_form_view(request):
     return render(request, "addtrip.html", context=context)
 
 #Trip details
-def tripDetails_view(request):
+def tripDetails_view(request, tripID):
     if request.method == "GET":
         if request.user.is_authenticated:
+            currUser = request.user
             tripname = models.Event.objects.all()
-            
+            for e in tripname:
+                trip = e
+                if e.id == tripID:
+                    break
+
             context = {
-                "title":"Trip Details",
+                "title": trip.location,
+                "id": trip.id,
                 "page_name":"Moneypool",
-                "trip_name":tripname,
+                #"trip_name":tripLoc,
             }
             return render(request, "tripdetails.html", context=context)
         else:

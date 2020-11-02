@@ -20,16 +20,7 @@ class Event(models.Model):
     objects = EventManager()
     def __str__(self):
         return self.location + " - " + self.date.strftime("%m/%d/%Y")
-
-class Attendees(models.Model):
-    tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
-    userid = models.ForeignKey(User, on_delete=models.CASCADE)
-
-class Invites(models.Model):
-    tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
-    invitedId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="invited_user")
-    fromId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_sent_invite")
-    
-    
-
+#def createEvent():
+#    Event.location = input("Where are you going?: ")
+#    Event.date = input("When are you going?: ")
 

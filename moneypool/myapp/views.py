@@ -166,6 +166,8 @@ def tripDetails_view(request, tripID):
             context = {
                 "title": t.location,
                 "id": t.id,
+                "date": t.date,
+                "attendants": t.attendants,
                 "page_name":"Moneypool",
                # "trip":trip,
             }

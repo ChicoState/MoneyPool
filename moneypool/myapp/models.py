@@ -4,7 +4,11 @@ import datetime
 import secrets
 
 # Create your models here.
-
+class EventManager(models.Manager):
+    def create_event(self, location, date, attendants, invited, author, public ):
+        event = self.create(location=location, date=date, attendants=attendants, invited=invited, author=author, public=public)
+        return event
+        
 class Event(models.Model):
     location = models.CharField(max_length = 30)
     date = models.DateField()

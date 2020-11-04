@@ -20,6 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),
     path('friendship/', include('friendship.urls')),
-    path('suggestions/', include('myapp.urls', namespace = "suggestions"))
+    #path('suggestions/', include('myapp.urls', namespace = "suggestions"))
 
 ]

@@ -97,28 +97,21 @@ def profile2(request, id):
                         "invited":e.invited
                     }]
 
-
+            
             context = {
                 "title":user.username,
                 "tripTitle": user.first_name + "'s Trips",
                 "page_name":"Moneypool",
                 "name": user.first_name,
-                "data": trip_list,
+                "data": trip_list, 
                 "button": button,
                 "from": request.user.id,
                 "to" : user.username,
                 "arefriends" : arefriends,
                 "sentreqs" : sentreqs
 
-				context = {
-					"title":"My Profile",
-					"page_name":"Moneypool",
-					"name": request.user.first_name,
-					"data": trip_list
-				}
-				return render(request, "profile.html", context=context)
-		else:
-			return redirect('/login/')
+            }
+            return render(request, "profile.html", context=context)
 
 #logout
 def logout_view(request):

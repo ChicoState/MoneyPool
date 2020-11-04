@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="grid-x grid-padding-x">
+  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
+
+    {% if latest_question_list %}
+        <tr>
+        {% for question in latest_question_list %}
+            <li><td><a href="/suggestions/{{ question.id }}/">{{ question.question_text }}</a></td></li>
+        {% endfor %}
+        </tr>
+    {% else %}
+        <p>No suggestions are available.</p>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock content %}

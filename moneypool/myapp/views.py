@@ -159,13 +159,15 @@ def tripDetails_view(request, tripID):
     if request.method == "GET":
         if request.user.is_authenticated:
             currUser = request.user
-            tripname = models.Event.objects.all()
-
+            alltrips = models.Event.objects.all()
+            for t in alltrips:
+                if tripID == t.id:
+                    break
             context = {
-                "title": trip.location,
-                "id": trip.id,
+                "title": t.location,
+                "id": t.id,
                 "page_name":"Moneypool",
-                #"trip_name":tripLoc,
+               # "trip":trip,
             }
             return render(request, "tripdetails.html", context=context)
         else:

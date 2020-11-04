@@ -1,0 +1,42 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  -webkit-box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+          box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  background-color: #f8bfa5;
+}
+
+.link {
+  color: blue;
+  text-decoration: underline;
+  font-size: 1.3em;
+}
+
+.fr {
+  color: #573502;
+  padding-top: 10px;
+  margin-left: 10px;
+}
+
+.button {
+  width: 60px;
+  height: 30px;
+  font-size: .7em;
+}
+
+.reject {
+  background-color: #dd4545;
+}
+/*# sourceMappingURL=profile.css.map */

@@ -1,0 +1,14 @@
+<ol>
+    {% for friend_request in friend_requests %}
+        <li>
+            <a href="/profile/{{friend_request.from_user.id}}" >{{ friend_request }}</a>
+            <form action="/friendship/friend/accept/{{friend_request.id}}/" method='POST'> {% csrf_token %}
+               <input type="submit" class="button accept" value="Accept"/>
+            </form>
+            <form action="/friendship/friend/reject/{{friend_request.id}}/" method='POST'> {% csrf_token %}
+                <input type="submit" class="button reject" value="Reject"/>
+             </form>
+        </li>
+        <!-- <hr style="background-color: black; height: 1px; border: none;"> -->
+    {% endfor %}
+</ol>

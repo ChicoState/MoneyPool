@@ -3,11 +3,28 @@ from . import models, forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from friendship.models import Friend, Follow, Block
+
 #from . import forms
 import datetime #for testing mytrips
 # Create your views here.
 
-#Login View
+def sendFR(request, id):
+    ctx = {"to_username": to_username}
+
+    if request.method == "POST":
+        to_user = user_model.objects.get(username=to_username)
+        from_user = request.user
+        try:
+            Friend.objects.add_friend(from_user, to_user)
+        except AlreadyExistsError as e:
+            ctx["errors"] = ["%s" % e]
+        else:
+            return redirect("friendship_request_list")
+
+    return render(request, template_name, ctx)
+
+#Login View Basic Profile
 @login_required(login_url='/login/')
 def index(request):
         if request.user.is_authenticated:
@@ -15,6 +32,12 @@ def index(request):
                 all_trips = models.Event.objects.all().order_by('date')
                 trip_list = []
                 friends_list = []
+                fromreqs = 0  # user has received a request
+                allFRs = Friend.objects.requests(request.user)
+                for f in allFRs:
+                    if f.to_user.id == request.user.id:
+                        fromreqs += 1
+                
                 for e in all_trips:
                     if e.author == request.user:
                         trip_list += [{
@@ -27,13 +50,62 @@ def index(request):
                 
                 context = {
                     "title":"My Profile",
+                    "tripTitle": "My Trips",
                     "page_name":"Moneypool",
-                    "name": request.user,
-                    "data": trip_list
+                    "name": request.user.first_name,
+                    "data": trip_list,
+                    "fromreqs": fromreqs
                 }
                 return render(request, "profile.html", context=context)
         else:    
             return redirect('/login/')
+
+# Profile view for a non-logged-in user
+def profile2(request, id):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            all_users = User.objects.all()
+            all_trips = models.Event.objects.all().order_by('date')
+            user = ""
+            button = ""
+            sentreqs = 0  # user has sent a request
+            for u in all_users:
+                if u.id == id:
+                    user = u
+                    button = 1
+            arefriends = Friend.objects.are_friends(request.user, user) == True
+            allFRs = Friend.objects.requests(request.user)
+            for f in allFRs:
+                if f.from_user.id == id:
+                    sentreqs = 1
+                if f.to_user.id == id:
+                    fromreqs = 1
+
+            trip_list = []
+            for e in all_trips:
+                if e.author == user:
+                    trip_list += [{
+                        "location":e.location,
+                        "date":e.date,
+                        "attendants":e.attendants,
+                        "invited":e.invited
+                    }]
+
+            
+            context = {
+                "title":user.username,
+                "tripTitle": user.first_name + "'s Trips",
+                "page_name":"Moneypool",
+                "name": user.first_name,
+                "data": trip_list, 
+                "button": button,
+                "from": request.user.id,
+                "to" : user.username,
+                "arefriends" : arefriends,
+                "sentreqs" : sentreqs
+
+            }
+            return render(request, "profile.html", context=context)
 
 #logout
 def logout_view(request):
@@ -74,7 +146,7 @@ def addTrip_form_view(request):
         "status":status,
         "form": form_instance,
     }
-    return render(request, "trip.html", context=context)
+    return render(request, "addtrip.html", context=context)
 
 #Trip details
 def tripDetails_view(request):
@@ -115,6 +187,25 @@ def viewTrips_view(request):
                 "name": request.user,
                 "data": public_trips
             }
-            return render(request, "publicTrips.html", context=context)
+            return render(request, "searchTrips.html", context=context)
     else:    
         return redirect('/login/')
+
+def findUsers(request):
+    if request.method == "GET":
+        all_users = User.objects.all()
+        user_list = []
+        for u in all_users:
+            if u.username != request.user.username:
+                user_list += [{
+                    "username": u.username,
+                    "first_name": u.first_name,
+                    "last_name": u.last_name,
+                    "id": u.id
+                }]
+        context = {
+            "title": "Find Users",
+            "page_name": "MoneyPool",
+            "user_list": user_list
+        }
+        return render(request, "findUsers.html", context=context)

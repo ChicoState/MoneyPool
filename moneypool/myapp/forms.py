@@ -59,8 +59,8 @@ class EventForm(forms.Form):
         widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
     )
     public = forms.BooleanField(
-        label="Can anybody join this event?",
-        required=True
+        label="Click if any of your friends can join",
+        required=False
     )
 
     def save(self, request, commit=True):

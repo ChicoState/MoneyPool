@@ -1,10 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from . import models, forms
+from .models import Question, Choice
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from friendship.models import Friend, Follow, Block
 
+
+from django.core.paginator import Paginator
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.urls import reverse
 #from . import forms
 import datetime #for testing mytrips
 # Create your views here.
@@ -37,7 +42,7 @@ def index(request):
                 for f in allFRs:
                     if f.to_user.id == request.user.id:
                         fromreqs += 1
-                
+
                 for e in all_trips:
                     if e.author == request.user:
                         trip_list += [{
@@ -48,7 +53,7 @@ def index(request):
                             "id":e.id
                         }]
 
-                
+
                 context = {
                     "title":"My Profile",
                     "tripTitle": "My Trips",
@@ -58,49 +63,103 @@ def index(request):
                     "fromreqs": fromreqs
                 }
                 return render(request, "profile.html", context=context)
-        else:    
+        else:
             return redirect('/login/')
+
+# Profile view for a non-logged-in user
+def profile2(request, id):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            all_users = User.objects.all()
+            all_trips = models.Event.objects.all().order_by('date')
+            user = ""
+            button = ""
+            sentreqs = 0  # user has sent a request
+            for u in all_users:
+                if u.id == id:
+                    user = u
+                    button = 1
+            arefriends = Friend.objects.are_friends(request.user, user) == True
+            allFRs = Friend.objects.requests(request.user)
+            for f in allFRs:
+                if f.from_user.id == id:
+                    sentreqs = 1
+                if f.to_user.id == id:
+                    fromreqs = 1
+
+            trip_list = []
+            for e in all_trips:
+                if e.author == user:
+                    trip_list += [{
+                        "location":e.location,
+                        "date":e.date,
+                        "attendants":e.attendants,
+                        "invited":e.invited
+                    }]
+
+
+            context = {
+                "title":user.username,
+                "tripTitle": user.first_name + "'s Trips",
+                "page_name":"Moneypool",
+                "name": user.first_name,
+                "data": trip_list,
+                "button": button,
+                "from": request.user.id,
+                "to" : user.username,
+                "arefriends" : arefriends,
+                "sentreqs" : sentreqs
+
+				context = {
+					"title":"My Profile",
+					"page_name":"Moneypool",
+					"name": request.user.first_name,
+					"data": trip_list
+				}
+				return render(request, "profile.html", context=context)
+		else:
+			return redirect('/login/')
 
 #logout
 def logout_view(request):
-    logout(request)
-    return redirect("/login/")
+	logout(request)
+	return redirect("/login/")
 
 #registration view
 def register(request):
-    if request.method == "POST":
-        form_instance = forms.RegistrationForm(request.POST)
-        if form_instance.is_valid():
-            form_instance.save()
-            return redirect("/login/")
-    else:
-        form_instance = forms.RegistrationForm()
-    context = {
-        "form":form_instance,
-    }
-    return render(request, "registration/register.html", context=context)
+	if request.method == "POST":
+		form_instance = forms.RegistrationForm(request.POST)
+		if form_instance.is_valid():
+			form_instance.save()
+			return redirect("/login/")
+	else:
+		form_instance = forms.RegistrationForm()
+	context = {
+		"form":form_instance,
+	}
+	return render(request, "registration/register.html", context=context)
 
 #Add a Trip
 def addTrip_form_view(request):
-    status = ""
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            form_instance = forms.EventForm(request.POST)
-            if form_instance.is_valid():
-                add_trip = form_instance.save(request=request)
-                status = "Trip Saved"
-        else:
-            return redirect("/login")
-    else:
-        form_instance = forms.EventForm()
+	status = ""
+	if request.method == "POST":
+		if request.user.is_authenticated:
+			form_instance = forms.EventForm(request.POST)
+			if form_instance.is_valid():
+				add_trip = form_instance.save(request=request)
+				status = "Trip Saved"
+		else:
+			return redirect("/login")
+	else:
+		form_instance = forms.EventForm()
 
-    context = {
-        "title":"New Trip",
-        "page_name":"Moneypool",
-        "status":status,
-        "form": form_instance,
-    }
-    return render(request, "addtrip.html", context=context)
+	context = {
+		"title":"New Trip",
+		"page_name":"Moneypool",
+		"status":status,
+		"form": form_instance,
+	}
+	return render(request, "addtrip.html", context=context)
 
 #Trip details
 def tripDetails_view(request, tripID):
@@ -108,10 +167,6 @@ def tripDetails_view(request, tripID):
         if request.user.is_authenticated:
             currUser = request.user
             tripname = models.Event.objects.all()
-            for e in tripname:
-                trip = e
-                if e.id == tripID:
-                    break
 
             context = {
                 "title": trip.location,
@@ -148,7 +203,7 @@ def viewTrips_view(request):
                 "data": public_trips
             }
             return render(request, "searchTrips.html", context=context)
-    else:    
+    else:
         return redirect('/login/')
 
 def findUsers(request):
@@ -169,6 +224,7 @@ def findUsers(request):
             "user_list": user_list
         }
         return render(request, "findUsers.html", context=context)
+
 
 
 #Script to populate tables with users and trips
@@ -208,3 +264,42 @@ def populateTrips(request):
     trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 0, 0, all_users[2], 1 )
 
     return redirect("/login")
+
+
+
+#This is where the suggestion list of the trip is
+@login_required(login_url='/login/')
+def suggestionIndex(request):
+	question_list = models.Question.objects.all().order_by('pub_date')
+	context = {
+		'latest_question_list': question_list
+	}
+	return render(request, 'suggestionIndex.html', context=context)
+
+#This is what details are apart of each suggestion
+@login_required(login_url='/login/')
+def suggestionDetail(request, question_id):
+	try:
+		queryset = models.Question.objects.get(pk=question_id)
+	except models.Question.DoesNotExist:
+		raise Http404("Question does not exist")
+	return render(request, 'suggestionDetail.html', { 'question': queryset})
+
+#This returns the result of each suggestion
+@login_required(login_url='/login/')
+def suggestionResults(request, question_id):
+	queryset = models.Question.objects.get(pk=question_id)
+	return render(request, 'suggestionResults.html', {'question': queryset})
+
+#This is how the user votes on a suggestion
+@login_required(login_url='/login/')
+def suggestionVote(request, question_id):
+	queryset = models.Question.objects.get(pk=question_id)
+	try:
+		tempVote = queryset.choice_set.get(pk=request.POST['choice'])
+	except models.Choice.DoesNotExist:
+		return render(request, 'suggestions/suggestionDetail.html', { 'question': queryset})
+	finally:
+		tempVote.votes += 1
+		tempVote.save()
+		return HttpResponseRedirect(reverse('suggestions:results', args=(queryset.id,)))

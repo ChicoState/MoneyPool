@@ -4,6 +4,8 @@ from django.contrib.auth import views as auth_views
 
 from . import views
 
+app_name = 'suggestions'
+
 urlpatterns = [
     path('', views.index),
     path('login/', auth_views.LoginView.as_view()),
@@ -19,5 +21,9 @@ urlpatterns = [
     path('tripdetails/<int:tripID>/', views.tripDetails_view)
     path('sendRequest/<int:id>', views.sendFR),
     path('populateTables/', views.populateTrips),
-    path('populateUsers/', views.populateUsers)
-]
+    path('populateUsers/', views.populateUsers),
+    path('suggestions/', views.suggestionIndex, name ='suggestionsIndex'),
+    path('suggestions/<int:question_id>/', views.suggestionDetail, name = 'details'),
+    path('suggestions/<int:question_id>/results', views.suggestionResults, name = 'results'),
+    path('suggestions/<int:question_id>/vote', views.suggestionVote, name = 'vote'),
+    ]

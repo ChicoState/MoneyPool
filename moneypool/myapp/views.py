@@ -92,7 +92,6 @@ def tripDetails_view(request, tripID):
                 "title": trip.location,
                 "id": trip.id,
                 "page_name":"Moneypool",
-                #"trip_name":tripLoc,
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -124,4 +123,5 @@ def viewTrips_view(request):
             }
             return render(request, "searchTrips.html", context=context)
     else:    
+        return redirect('/login/')
         return redirect('/login/')

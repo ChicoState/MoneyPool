@@ -3,11 +3,17 @@ from django.contrib.auth.models import User
 import datetime
 import secrets
 
+#AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
+
 # Create your models here.
 class EventManager(models.Manager):
     def create_event(self, location, date, attendants, invited, author, public ):
         event = self.create(location=location, date=date, attendants=attendants, invited=invited, author=author, public=public)
         return event
+    def create_attendee(self, tripid, userid):
+        attendee = self.create(tripid=tripid, userid=userid)
+        return attendee
+    
         
 class Event(models.Model):
     location = models.CharField(max_length = 30)
@@ -22,16 +28,32 @@ class Event(models.Model):
     def __str__(self):
         return self.location + " - " + self.date.strftime("%m/%d/%Y")
 
-class Attendees(models.Model):
+class TripAttendees(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
     userid = models.ForeignKey(User, on_delete=models.CASCADE)
+    objects = EventManager()
 
-class Invites(models.Model):
+class TripInviteRequest(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
-    invitedId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="invited_user")
-    fromId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_sent_invite")
+    from_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="trip_requests_sent",
+    )
+    to_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="trip_requests_received",
+    )
     
-
+    def __str__(self):
+        return ("%s" % self.from_user)
+    
+    def accept(self):
+        """ Accept this trip request """
+        TripAttendees.objects.create_attendee(to_user=self.to_user, tripid=self.tripid)
+        self.delete()
+        return True
 
 
 class Question(models.Model):

@@ -64,20 +64,50 @@
             <!-- Maybe -->
          </div>
       </div>
+      {% if attending %}
+         <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-9">
+               <h2 class="text-center">{{attendingTitle}}</h2>
+               <table class="table table-hover table-bordered">
+                  <tr class="thead-dark">
+                     <th>Event Name</th>
+                     <th>Event Date</th>
+                  </tr>
+                  {% for i in attending %}
+                     <tr>
+                        <td><a href="/tripdetails/{{i.id}}">{{i.location}}</a></td>
+                        <td>{{i.date}}</td>
+                     </tr>
+                  {% endfor %}
+               </table>
+            </div>
+         </div>
+      {% endif %}
       <div class="row">
          <div class="col-md-3"></div>
-         <div class="col-md-9">
+         <div class="col-md-5">
             {% if not button %}
                <h2>Friends</h2>
                {% friends request.user %}
 
             {% endif %}
-            
+         </div>
+         <div class="col-md-4">
+            {% if not button %}
+            <h2>Trip Invites</h2>
+            <ul>
+               {% for i in tripInvites %}
+                  <li><a href="/tripdetails/{{i.tripID}}">{{i.name}}</a> {{i.from}}</li>
+               {% endfor %}
+            </ul>
+            {% endif %}
          </div>
       </div>
    </div>
    <!-- ADD MORE CONTAINERS HERE -->
-   
+
+
 {% endblock content %} 
     
 

@@ -29,13 +29,32 @@ def sendFR(request, id):
 
     return render(request, template_name, ctx)
 
+def joinTrip(request, id):
+    if request.method == "POST":
+        trip = models.Event.objects.get(id=id)
+        models.TripAttendees.objects.create_attendee(trip, request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def cancelJoin(request, id):
+    if request.method == "POST":
+        attendees = models.TripAttendees.objects.all()
+        for a in attendees:
+            if a.tripid.id == id:
+                if a.userid.id == request.user.id:
+                    a.remove(id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 #Login View Basic Profile
 @login_required(login_url='/login/')
 def index(request):
         if request.user.is_authenticated:
             if request.method == "GET":
                 all_trips = models.Event.objects.all().order_by('date')
+                tripInvites = models.TripInviteRequest.objects.all()
+                attending = models.TripAttendees.objects.all()
                 trip_list = []
+                trip_invite_list = []
+                attending_list = []
                 friends_list = []
                 fromreqs = 0  # user has received a request
                 allFRs = Friend.objects.requests(request.user)
@@ -52,15 +71,31 @@ def index(request):
                             "invited":e.invited,
                             "id":e.id
                         }]
-
-
+                for t in tripInvites:
+                    if t.to_user == request.user:
+                        trip_invite_list += [{
+                            "name":t.tripid.location,
+                            "from":t.from_user.username,
+                            "tripID": t.tripid.id,
+                        }]
+                        
+                for a in attending:
+                    if a.userid.username == request.user.username:
+                        attending_list += [{
+                            "location": a.tripid.location,
+                            "date": a.tripid.date,
+                            "id":a.tripid.id
+                        }]
                 context = {
                     "title":"My Profile",
-                    "tripTitle": "My Trips",
+                    "tripTitle": "My Created Trips",
+                    "attendingTitle": "Trips Attending",
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
                     "data": trip_list,
-                    "fromreqs": fromreqs
+                    "fromreqs": fromreqs,
+                    "tripInvites":trip_invite_list,
+                    "attending":attending_list
                 }
                 return render(request, "profile.html", context=context)
         else:
@@ -71,7 +106,7 @@ def profile2(request, id):
     if request.user.is_authenticated:
         if request.method == "GET":
             all_users = User.objects.all()
-            all_trips = models.Event.objects.all().order_by('date')
+            all_trips = models.Event.objects.all()
             user = ""
             button = ""
             sentreqs = 0  # user has sent a request
@@ -94,7 +129,8 @@ def profile2(request, id):
                         "location":e.location,
                         "date":e.date,
                         "attendants":e.attendants,
-                        "invited":e.invited
+                        "invited":e.invited, 
+                        "id": e.id
                     }]
 
             
@@ -134,42 +170,70 @@ def register(request):
 
 #Add a Trip
 def addTrip_form_view(request):
-	status = ""
-	if request.method == "POST":
-		if request.user.is_authenticated:
-			form_instance = forms.EventForm(request.POST)
-			if form_instance.is_valid():
-				add_trip = form_instance.save(request=request)
-				status = "Trip Saved"
-		else:
-			return redirect("/login")
-	else:
-		form_instance = forms.EventForm()
+    status = ""
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form_instance = forms.EventForm(request.POST)
+            if form_instance.is_valid():
+                add_trip = form_instance.save(request=request)
+                status = "Trip Saved"
+                Friend.objects.order_by("username")
+                friends = Friend.objects.friends(request.user)
+                invites = request.POST.get("friends", None)
+                for f in friends:
+                    if f.username in request.POST:
+                        status = "about to create request"
+                        myrequest = models.TripInviteRequest.objects.create_trip_invite(add_trip, request.user, f)
+            else:
+                return redirect("/login")
+    else:
+        form_instance = forms.EventForm()
+        friends = Friend.objects.friends(request.user)
 
-	context = {
-		"title":"New Trip",
-		"page_name":"Moneypool",
-		"status":status,
-		"form": form_instance,
-	}
-	return render(request, "addtrip.html", context=context)
+
+
+    context = {
+        "title":"New Trip",
+        "page_name":"Moneypool",
+        "status":status,
+        "form": form_instance,
+        "friends":friends
+    }
+    return render(request, "addtrip.html", context=context)
 
 #Trip details
 def tripDetails_view(request, tripID):
     if request.method == "GET":
         if request.user.is_authenticated:
             currUser = request.user
-            alltrips = models.Event.objects.all()
-            for t in alltrips:
-                if tripID == t.id:
-                    break
+            t = models.Event.objects.get(id=tripID)
+            tripInvites = models.TripInviteRequest.objects.all()
+            allAttendees = models.TripAttendees.objects.all()
+            isattending = 0
+            for a in allAttendees:
+                if a.userid == request.user:
+                    if a.tripid.id == tripID:
+                        isattending = 1
+           
+            isauthor = 1
+            if t.author != request.user:
+               isauthor = 0
+            
+            invited = 0
+            for t in tripInvites:
+                if t.to_user == request.user:
+                    if t.tripid.id == tripID:
+                        invited = 1
+            
             context = {
                 "title": t.location,
                 "id": t.id,
                 "date": t.date,
                 "attendants": t.attendants,
                 "page_name":"Moneypool",
-               # "trip":trip,
+                "isauthor": isauthor,
+                "isattending": isattending,
+                "isinvited" : invited
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -262,7 +326,15 @@ def populateTrips(request):
 
     return redirect("/login")
 
-
+#function to accept a trip request
+def acceptTripReq(request, id):
+    userInvites = models.TripInviteRequest.objects.all()
+    inviteList = []
+    for u in userInvites:
+        if u.to_user == request.user:
+            if u.tripid.id == id:
+               u.accept()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 #This is where the suggestion list of the trip is
 @login_required(login_url='/login/')

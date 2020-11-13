@@ -14,7 +14,7 @@
 
 .dropdown:hover .dropdown-content{
     display: block;
-    background-color: #f8bfa5;
+    background-color: rgba(255, 255, 250, .5)
 }
 
 .link{
@@ -38,3 +38,16 @@
 .reject{
     background-color: rgb(221, 69, 69);
 }
+
+.r{
+    background-color: red;
+ }
+ 
+ .g{
+     background-color: green;
+ }
+ 
+ .b{
+     background-color: blue;
+ }
+ 

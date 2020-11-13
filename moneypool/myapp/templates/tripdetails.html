@@ -10,15 +10,42 @@
 
 {% block content %}
 
-<div>
-  <div>
-    <div class="text-center"> Event Details</div>
-      <div>
-        <li class="text-center"> Where are we going: {{title}} </li>
-        <li class="text-center"> When are we going: {{date}} </li>
-        <li class="text-center"> How many are going: {{attendants}} </li>
+<div class="Container">
+  <div class="row">
+      <div class="col-md-6"></div>
+      <div class="col-md-3">
+          {% if not isauthor and not isattending %}
+              {% if invited %}
+                  <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
+                    <input type="submit" class="button" value="Join Trip"/>
+                  </form>
+              {% endif %}
+
+              {% if not invited %}
+                <form action="/joinTrip/{{id}}/" method='POST'> {% csrf_token %}
+                  <input type="submit" class="button" value="Join Trip"/>
+                </form>
+              {% endif %}
+          {%endif%}
+          {% if isattending %}
+            <form action="/cancelJoin/{{id}}/" method='POST'> {% csrf_token %}
+              <input type="submit" class="button" value="Cancel Join"/>
+            </form>
+          {% endif %}
       </div>
+      <div class="col-md-3"></div>
+
+  </div>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-9">
+      <h3 class="text-center"> Event Details</h3>
+        <p class="text-center"> Where are we going: {{title}} </p>
+        <p class="text-center"> When are we going: {{date}} </p>
+        <p class="text-center"> How many are going: {{attendants}} </p>
+    </div>
   </div>
 </div>
+
 
 {% endblock content %}

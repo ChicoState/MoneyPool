@@ -49,6 +49,7 @@ class RegistrationForm(UserCreationForm):
         return user
 
 class EventForm(forms.Form):
+
     location = forms.CharField(
         label="Where are we going?",
         max_length=30,
@@ -59,10 +60,9 @@ class EventForm(forms.Form):
         widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
     )
     public = forms.BooleanField(
-        label="Click if any of your friends can join",
+        label="Check this box if trip is open to all friends",
         required=False
     )
-
     def save(self, request, commit=True):
         trip_instance = models.Event(
             location = self.cleaned_data["location"],
@@ -72,8 +72,10 @@ class EventForm(forms.Form):
             public = self.cleaned_data["public"],
             author = request.user
         )
+
         if commit:
             trip_instance.save()
         return trip_instance
+
 
 

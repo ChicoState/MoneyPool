@@ -14,13 +14,25 @@
 
 {% block content %}
 
-<div class="grid-x grid-padding-x">
-  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
-    <form action="/addtrip/", method ="post">{% csrf_token %}
-        {{form}}
-            <input type="submit" value="Create New Trip" class="button"/>
-    </form>
-    <p>{{status}}</p>
+<div class="container">
+   <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-9">
+         <form action="/addtrip/", method ="post">{% csrf_token %}
+            {{form}}
+            <p>Invite Friends:</p>
+               <div class="friends scroll">
+                  
+                  {%for f in friends %}
+                     <input type="checkbox" class="check" id={{f.id}} name="{{f}}" value="{{f}}">
+                     <label for={{f.id}} class="friendLabel">{{f}}</label><br>  
+                  {% endfor %}
+               </div>
+               <input type="submit" value="Create New Trip" class="button"/>
+         </form>
+         <p>{{status}}</p>
+
+      </div>
   </div>
 </div>
 

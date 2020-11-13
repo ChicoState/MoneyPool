@@ -1,3 +1,23 @@
-#id_public{
-    display: block;
+
+label{
+    display: inline;
+    padding-right: 15px;
+}
+.friendLabel{
+   color:navy;
+}
+
+.check{
+    margin-left: 20px;
+}
+.scroll{
+    margin-left: 10px; 
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 250, .5);
+    padding:2px;
+    width: 45%; 
+    height: 100px; 
+    overflow-x: hidden; 
+    overflow-y: auto; 
+    text-align:justify; 
 }

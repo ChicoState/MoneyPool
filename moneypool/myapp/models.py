@@ -13,6 +13,9 @@ class EventManager(models.Manager):
     def create_attendee(self, tripid, userid):
         attendee = self.create(tripid=tripid, userid=userid)
         return attendee
+    def create_trip_invite(self, tripid, from_user, to_user):
+        invite = self.create(tripid=tripid, from_user=from_user, to_user=to_user)
+        return invite
     
         
 class Event(models.Model):
@@ -25,8 +28,9 @@ class Event(models.Model):
     public = models.BooleanField(default = False)
     
     objects = EventManager()
-    def __str__(self):
-        return self.location + " - " + self.date.strftime("%m/%d/%Y")
+
+    #def __str__(self):
+     #   return self.location + " - " + self.date.strftime("%m/%d/%Y")
 
 class TripAttendees(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -45,6 +49,8 @@ class TripInviteRequest(models.Model):
         on_delete=models.CASCADE,
         related_name="trip_requests_received",
     )
+
+    objects = EventManager()
     
     def __str__(self):
         return ("%s" % self.from_user)
@@ -52,6 +58,9 @@ class TripInviteRequest(models.Model):
     def accept(self):
         """ Accept this trip request """
         TripAttendees.objects.create_attendee(to_user=self.to_user, tripid=self.tripid)
+        obj = Event.objects.get(pk=self.tripid)
+        obj.attendants = obj.attendants + 1
+        obj.save()
         self.delete()
         return True
 

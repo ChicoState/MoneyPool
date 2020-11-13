@@ -66,13 +66,20 @@
       </div>
       <div class="row">
          <div class="col-md-3"></div>
-         <div class="col-md-9">
+         <div class="col-md-5">
             {% if not button %}
                <h2>Friends</h2>
                {% friends request.user %}
 
             {% endif %}
-            
+         </div>
+         <div class="col-md-4">
+            <h2>Trip Invites</h2>
+            <ul>
+               {% for i in tripInvites %}
+                  <li><a href="/tripdetails/{{i.tripID}}">{{i.name}}</a> {{i.from}}</li>
+               {% endfor %}
+            </ul>
          </div>
       </div>
    </div>

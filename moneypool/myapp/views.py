@@ -35,7 +35,9 @@ def index(request):
         if request.user.is_authenticated:
             if request.method == "GET":
                 all_trips = models.Event.objects.all().order_by('date')
+                tripInvites = models.TripInviteRequest.objects.all()
                 trip_list = []
+                trip_invite_list = []
                 friends_list = []
                 fromreqs = 0  # user has received a request
                 allFRs = Friend.objects.requests(request.user)
@@ -52,7 +54,14 @@ def index(request):
                             "invited":e.invited,
                             "id":e.id
                         }]
+                for t in tripInvites:
+                    if t.to_user == request.user:
+                        trip_invite_list += [{
+                            "name":t.tripid.location,
+                            "from":t.from_user.username,
+                            "tripID": t.tripid.id,
 
+                        }]
 
                 context = {
                     "title":"My Profile",
@@ -60,7 +69,8 @@ def index(request):
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
                     "data": trip_list,
-                    "fromreqs": fromreqs
+                    "fromreqs": fromreqs,
+                    "tripInvites":trip_invite_list
                 }
                 return render(request, "profile.html", context=context)
         else:
@@ -71,7 +81,7 @@ def profile2(request, id):
     if request.user.is_authenticated:
         if request.method == "GET":
             all_users = User.objects.all()
-            all_trips = models.Event.objects.all().order_by('date')
+            all_trips = models.Event.objects.all()
             user = ""
             button = ""
             sentreqs = 0  # user has sent a request
@@ -141,6 +151,12 @@ def addTrip_form_view(request):
             if form_instance.is_valid():
                 add_trip = form_instance.save(request=request)
                 status = "Trip Saved"
+                friends = Friend.objects.friends(request.user)
+                invites = request.POST.get("friends", None)
+                for f in friends:
+                    if f.username in request.POST:
+                        status = "about to create request"
+                        myrequest = models.TripInviteRequest.objects.create_trip_invite(add_trip, request.user, f)
             else:
                 return redirect("/login")
     else:

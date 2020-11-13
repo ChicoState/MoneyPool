@@ -29,6 +29,13 @@ def sendFR(request, id):
 
     return render(request, template_name, ctx)
 
+def joinTrip(request, id):
+    if request.method == "POST":
+        trip = models.Event.objects.get(id=id)
+        models.TripAttendees.objects.create_attendee(trip, request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 #Login View Basic Profile
 @login_required(login_url='/login/')
 def index(request):
@@ -114,7 +121,8 @@ def profile2(request, id):
                         "location":e.location,
                         "date":e.date,
                         "attendants":e.attendants,
-                        "invited":e.invited
+                        "invited":e.invited, 
+                        "id": e.id
                     }]
 
             
@@ -190,21 +198,30 @@ def tripDetails_view(request, tripID):
         if request.user.is_authenticated:
             currUser = request.user
             t = models.Event.objects.get(id=tripID)
+            tripInvites = models.TripInviteRequest.objects.all()
             allAttendees = models.TripAttendees.objects.all()
             isattending = 0
             for a in allAttendees:
                 if a.userid == request.user:
                     if a.tripid.id == tripID:
                         isattending = 1
+           
             isauthor = 1
             if t.author != request.user:
                isauthor = 0
+            
+            invited = 0
+            for t in tripInvites:
+                if t.to_user == request.user:
+                    if t.tripid.id == tripID:
+                        invited = 1
             
             context = {
                 "title": t.location,
                 "id": t.id,
                 "isauthor": isauthor,
-                "isattending": isattending
+                "isattending": isattending,
+                "isinvited" : invited
             }
             return render(request, "tripdetails.html", context=context)
         else:

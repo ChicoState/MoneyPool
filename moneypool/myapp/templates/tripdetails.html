@@ -13,9 +13,17 @@
 <div>
   <div>
     {% if not isauthor and not isattending %}
-    <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
-      <input type="submit" class="button expanded" value="Join Trip"/>
-   </form>
+      {% if invited %}
+          <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
+            <input type="submit" class="button expanded" value="Join Trip"/>
+          </form>
+      {% endif %}
+
+      {% if not invited %}
+        <form action="/joinTrip/{{id}}/" method='POST'> {% csrf_token %}
+          <input type="submit" class="button expanded" value="Join Trip"/>
+        </form>
+      {% endif %}
     {%endif%}
   </div>
 </div>

@@ -20,6 +20,7 @@ urlpatterns = [
     path('sendRequest/<int:id>', views.sendFR),
     path('tripdetails/<int:tripID>/', views.tripDetails_view),
     path('sendRequest/<int:id>', views.sendFR),
+    path('acceptTripReq/<int:id>/', views.acceptTripReq),
     path('populateTables/', views.populateTrips),
     path('populateUsers/', views.populateUsers),
     path('suggestions/', views.suggestionIndex, name ='suggestionsIndex'),

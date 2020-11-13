@@ -36,8 +36,10 @@ def index(request):
             if request.method == "GET":
                 all_trips = models.Event.objects.all().order_by('date')
                 tripInvites = models.TripInviteRequest.objects.all()
+                attending = models.TripAttendees.objects.all()
                 trip_list = []
                 trip_invite_list = []
+                attending_list = []
                 friends_list = []
                 fromreqs = 0  # user has received a request
                 allFRs = Friend.objects.requests(request.user)
@@ -60,17 +62,25 @@ def index(request):
                             "name":t.tripid.location,
                             "from":t.from_user.username,
                             "tripID": t.tripid.id,
-
                         }]
-
+                        
+                for a in attending:
+                    if a.userid.username == request.user.username:
+                        attending_list += [{
+                            "location": a.tripid.location,
+                            "date": a.tripid.date,
+                            "id":a.tripid.id
+                        }]
                 context = {
                     "title":"My Profile",
                     "tripTitle": "My Trips",
+                    "attendingTitle": "Trips Attending",
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
                     "data": trip_list,
                     "fromreqs": fromreqs,
-                    "tripInvites":trip_invite_list
+                    "tripInvites":trip_invite_list,
+                    "attending":attending_list
                 }
                 return render(request, "profile.html", context=context)
         else:
@@ -179,15 +189,22 @@ def tripDetails_view(request, tripID):
     if request.method == "GET":
         if request.user.is_authenticated:
             currUser = request.user
-            alltrips = models.Event.objects.all()
-            for t in alltrips:
-                if tripID == t.id:
-                    break
+            t = models.Event.objects.get(id=tripID)
+            allAttendees = models.TripAttendees.objects.all()
+            isattending = 0
+            for a in allAttendees:
+                if a.userid == request.user:
+                    if a.tripid.id == tripID:
+                        isattending = 1
+            isauthor = 1
+            if t.author != request.user:
+               isauthor = 0
+            
             context = {
                 "title": t.location,
                 "id": t.id,
-                "page_name":"Moneypool",
-               # "trip":trip,
+                "isauthor": isauthor,
+                "isattending": isattending
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -280,7 +297,15 @@ def populateTrips(request):
 
     return redirect("/login")
 
-
+#function to accept a trip request
+def acceptTripReq(request, id):
+    userInvites = models.TripInviteRequest.objects.all()
+    inviteList = []
+    for u in userInvites:
+        if u.to_user == request.user:
+            if u.tripid.id == id:
+               u.accept()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 #This is where the suggestion list of the trip is
 @login_required(login_url='/login/')

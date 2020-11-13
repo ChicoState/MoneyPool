@@ -37,6 +37,9 @@ class TripAttendees(models.Model):
     userid = models.ForeignKey(User, on_delete=models.CASCADE)
     objects = EventManager()
 
+    def __str__(self):
+        return self.tripid.location + "  -  " + self.userid.username
+
 class TripInviteRequest(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
     from_user = models.ForeignKey(
@@ -53,12 +56,12 @@ class TripInviteRequest(models.Model):
     objects = EventManager()
     
     def __str__(self):
-        return ("%s" % self.from_user)
+        return self.tripid.location + " - " + to_user.username
     
     def accept(self):
         """ Accept this trip request """
-        TripAttendees.objects.create_attendee(to_user=self.to_user, tripid=self.tripid)
-        obj = Event.objects.get(pk=self.tripid)
+        TripAttendees.objects.create_attendee(self.tripid, self.to_user)
+        obj = Event.objects.get(pk=self.tripid.id)
         obj.attendants = obj.attendants + 1
         obj.save()
         self.delete()

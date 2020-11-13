@@ -50,7 +50,6 @@ class RegistrationForm(UserCreationForm):
 
 class EventForm(forms.Form):
 
-    invites = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=choices)
     location = forms.CharField(
         label="Where are we going?",
         max_length=30,

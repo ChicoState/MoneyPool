@@ -18,6 +18,10 @@
   <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
     <form action="/addtrip/", method ="post">{% csrf_token %}
         {{form}}
+           {%for f in friends %}
+              <input type="checkbox" id={{f.id}} name="{{f}}" value="{{f}}">
+              <label for={{f.id}}>{{f}}</label><br>  
+           {% endfor %}
             <input type="submit" value="Create New Trip" class="button"/>
     </form>
     <p>{{status}}</p>

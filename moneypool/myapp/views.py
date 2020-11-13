@@ -134,25 +134,29 @@ def register(request):
 
 #Add a Trip
 def addTrip_form_view(request):
-	status = ""
-	if request.method == "POST":
-		if request.user.is_authenticated:
-			form_instance = forms.EventForm(request.POST)
-			if form_instance.is_valid():
-				add_trip = form_instance.save(request=request)
-				status = "Trip Saved"
-		else:
-			return redirect("/login")
-	else:
-		form_instance = forms.EventForm()
+    status = ""
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form_instance = forms.EventForm(request.POST)
+            if form_instance.is_valid():
+                add_trip = form_instance.save(request=request)
+                status = "Trip Saved"
+            else:
+                return redirect("/login")
+    else:
+        form_instance = forms.EventForm()
+        friends = Friend.objects.friends(request.user)
 
-	context = {
-		"title":"New Trip",
-		"page_name":"Moneypool",
-		"status":status,
-		"form": form_instance,
-	}
-	return render(request, "addtrip.html", context=context)
+
+
+    context = {
+        "title":"New Trip",
+        "page_name":"Moneypool",
+        "status":status,
+        "form": form_instance,
+        "friends":friends
+    }
+    return render(request, "addtrip.html", context=context)
 
 #Trip details
 def tripDetails_view(request, tripID):

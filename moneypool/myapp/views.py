@@ -80,7 +80,7 @@ def index(request):
                         }]
                 context = {
                     "title":"My Profile",
-                    "tripTitle": "My Trips",
+                    "tripTitle": "My Created Trips",
                     "attendingTitle": "Trips Attending",
                     "page_name":"Moneypool",
                     "name": request.user.first_name,
@@ -169,6 +169,7 @@ def addTrip_form_view(request):
             if form_instance.is_valid():
                 add_trip = form_instance.save(request=request)
                 status = "Trip Saved"
+                Friend.objects.order_by("username")
                 friends = Friend.objects.friends(request.user)
                 invites = request.POST.get("friends", None)
                 for f in friends:

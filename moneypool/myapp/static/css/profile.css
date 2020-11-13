@@ -15,7 +15,7 @@
 
 .dropdown:hover .dropdown-content {
   display: block;
-  background-color: #f8bfa5;
+  background-color: rgba(255, 255, 250, 0.5);
 }
 
 .link {

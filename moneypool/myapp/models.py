@@ -29,8 +29,9 @@ class Event(models.Model):
     
     objects = EventManager()
 
-    #def __str__(self):
-     #   return self.location + " - " + self.date.strftime("%m/%d/%Y")
+    def __str__(self):
+        return self.location + " - " + self.date.strftime("%m/%d/%Y")
+
 
 class TripAttendees(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)

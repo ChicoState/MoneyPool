@@ -10,22 +10,32 @@
 
 {% block content %}
 
-<div>
-  <div>
-    {% if not isauthor and not isattending %}
-      {% if invited %}
-          <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
-            <input type="submit" class="button expanded" value="Join Trip"/>
-          </form>
-      {% endif %}
+<div class="Container">
+  <div class="row">
+    <div class="col-md-6"></div>
+    <div class="col-md-3">
+        {% if not isauthor and not isattending %}
+            {% if invited %}
+                <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
+                  <input type="submit" class="button" value="Join Trip"/>
+                </form>
+            {% endif %}
 
-      {% if not invited %}
-        <form action="/joinTrip/{{id}}/" method='POST'> {% csrf_token %}
-          <input type="submit" class="button expanded" value="Join Trip"/>
-        </form>
-      {% endif %}
-    {%endif%}
+            {% if not invited %}
+              <form action="/joinTrip/{{id}}/" method='POST'> {% csrf_token %}
+                <input type="submit" class="button" value="Join Trip"/>
+              </form>
+            {% endif %}
+        {%endif%}
+        {% if isattending %}
+          <form action="/cancelJoin/{{id}}/" method='POST'> {% csrf_token %}
+            <input type="submit" class="button" value="Cancel Join"/>
+          </form>
+        {% endif %}
+    </div>
+    <div class="col-md-3"></div>
   </div>
 </div>
+
 
 {% endblock content %}

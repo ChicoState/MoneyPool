@@ -35,6 +35,14 @@ def joinTrip(request, id):
         models.TripAttendees.objects.create_attendee(trip, request.user)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+def cancelJoin(request, id):
+    if request.method == "POST":
+        attendees = models.TripAttendees.objects.all()
+        for a in attendees:
+            if a.tripid.id == id:
+                if a.userid.id == request.user.id:
+                    a.remove(id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 #Login View Basic Profile
 @login_required(login_url='/login/')

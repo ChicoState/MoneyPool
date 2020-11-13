@@ -22,6 +22,7 @@ urlpatterns = [
     path('sendRequest/<int:id>', views.sendFR),
     path('acceptTripReq/<int:id>/', views.acceptTripReq),
     path('joinTrip/<int:id>/', views.joinTrip),
+    path('cancelJoin/<int:id>/', views.cancelJoin),
     path('populateTables/', views.populateTrips),
     path('populateUsers/', views.populateUsers),
     path('suggestions/', views.suggestionIndex, name ='suggestionsIndex'),

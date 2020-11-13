@@ -41,6 +41,11 @@ class TripAttendees(models.Model):
     def __str__(self):
         return self.tripid.location + "  -  " + self.userid.username
 
+    def remove(self, id):
+        trip = Event.objects.get(pk=id)
+        trip.attendants = trip.attendants -1
+        self.delete()
+    
 class TripInviteRequest(models.Model):
     tripid = models.ForeignKey(Event, on_delete=models.CASCADE)
     from_user = models.ForeignKey(

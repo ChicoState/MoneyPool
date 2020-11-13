@@ -62,7 +62,7 @@ class TripInviteRequest(models.Model):
     objects = EventManager()
     
     def __str__(self):
-        return self.tripid.location + " - " + to_user.username
+        return self.tripid.location + " - " + self.to_user.username
     
     def accept(self):
         """ Accept this trip request """

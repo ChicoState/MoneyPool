@@ -177,7 +177,6 @@ def addTrip_form_view(request):
             if form_instance.is_valid():
                 add_trip = form_instance.save(request=request)
                 status = "Trip Saved"
-                Friend.objects.order_by("username")
                 friends = Friend.objects.friends(request.user)
                 invites = request.POST.get("friends", None)
                 for f in friends:
@@ -220,16 +219,16 @@ def tripDetails_view(request, tripID):
                isauthor = 0
             
             invited = 0
-            for t in tripInvites:
-                if t.to_user == request.user:
-                    if t.tripid.id == tripID:
+            for o in tripInvites:
+                if o.to_user.username == request.user.username: 
+                    if o.tripid.id == tripID:
                         invited = 1
-            
             context = {
                 "title": t.location,
                 "id": t.id,
                 "date": t.date,
                 "attendants": t.attendants,
+                "public": t.public,
                 "page_name":"Moneypool",
                 "isauthor": isauthor,
                 "isattending": isattending,

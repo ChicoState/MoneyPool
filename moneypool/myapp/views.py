@@ -92,6 +92,8 @@ def tripDetails_view(request, tripID):
                 "title": trip.location,
                 "id": trip.id,
                 "page_name":"Moneypool",
+                "date": trip.date,
+                "attendants": trip.attendants
             }
             return render(request, "tripdetails.html", context=context)
         else:

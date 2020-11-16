@@ -8,6 +8,15 @@
     <h1 class="text-center"> {{title}}</h1>
 {% endblock header %}
 
+<style>
+.detailsDiv(
+  text-align: center;
+  border: 2px solid black;
+  margin: 20px;
+  padding: 20px;
+)
+</style>
+
 {% block content %}
 
 <div class="Container">
@@ -49,6 +58,33 @@
     </div>
   </div>
 </div>
+<div>
+      <div class=".detailsDiv">
+         <div class="col-md-3"></div>
+         <div >
+            <h2 class="text-center">details</h2>
+            <li>{{title}}</li>
+            <li>{{date}}</li>
+            <li>{{attendants}}</li>
+            <table class="table table-hover table-bordered">
+               <tr class="thead-dark">
+                  <th>Category</th>
+                  <th></th>
+                  <th type="button">add</th>
+               </tr>
+                  <tr type="button">
+                     <td class="text-center">Traveling</td> 
+                  </tr>
+                  <tr type="button">
+                     <td class="text-center">Housing</td> 
+                  </tr>
+                  <tr type="button">
+                     <td class="text-center">Food</td> 
+                  </tr>
+            </table>
+         </div>
+      </div>
+   </div>
 
 
 {% endblock content %}

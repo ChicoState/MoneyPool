@@ -232,7 +232,9 @@ def tripDetails_view(request, tripID):
                 "page_name":"Moneypool",
                 "isauthor": isauthor,
                 "isattending": isattending,
-                "isinvited" : invited
+                "isinvited" : invited,
+                "date": t.date,
+                "attendants": t.attendants
             }
             return render(request, "tripdetails.html", context=context)
         else:

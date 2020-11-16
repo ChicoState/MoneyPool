@@ -256,7 +256,8 @@ def viewTrips_view(request):
                             "author": e.author,
                             "date":e.date,
                             "attendants":e.attendants,
-                            "invited":e.invited
+                            "invited":e.invited,
+                            "id":e.id
                         }]
             context = {
                 "title":"Search for A Trip",

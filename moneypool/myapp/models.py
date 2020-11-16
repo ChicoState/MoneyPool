@@ -12,6 +12,8 @@ class EventManager(models.Manager):
         return event
     def create_attendee(self, tripid, userid):
         attendee = self.create(tripid=tripid, userid=userid)
+        tripid.attendants += 1
+        tripid.save()
         return attendee
     def create_trip_invite(self, tripid, from_user, to_user):
         invite = self.create(tripid=tripid, from_user=from_user, to_user=to_user)
@@ -43,7 +45,8 @@ class TripAttendees(models.Model):
 
     def remove(self, id):
         trip = Event.objects.get(pk=id)
-        trip.attendants = trip.attendants -1
+        trip.attendants -= 1
+        trip.save()
         self.delete()
     
 class TripInviteRequest(models.Model):
@@ -67,9 +70,6 @@ class TripInviteRequest(models.Model):
     def accept(self):
         """ Accept this trip request """
         TripAttendees.objects.create_attendee(self.tripid, self.to_user)
-        obj = Event.objects.get(pk=self.tripid.id)
-        obj.attendants = obj.attendants + 1
-        obj.save()
         self.delete()
         return True
 

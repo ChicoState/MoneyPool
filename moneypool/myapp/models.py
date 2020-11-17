@@ -21,6 +21,7 @@ class EventManager(models.Manager):
     
         
 class Event(models.Model):
+    title = models.CharField(max_length = 30)
     location = models.CharField(max_length = 30)
     date = models.DateField()
     attendants = models.IntegerField()
@@ -77,6 +78,7 @@ class TripInviteRequest(models.Model):
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('Date Published')
+    category = models.CharField(max_length=20)
 
 class Choice(models.Model):
 	question = models.ForeignKey(Question, on_delete=models.CASCADE)

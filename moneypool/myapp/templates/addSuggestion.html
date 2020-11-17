@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}
+    <h1 class="text-center">Add a suggestion</h1>
+{% endblock header %}
+
+{% block content %}
+
+<div class="grid-x grid-padding-x">
+  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
+    <form action="/addSuggestion/", method ="post">{% csrf_token %}
+
+            <input type="submit" value="Add suggestion." class="button"/>
+    </form>
+  </div>
+</div>
+
+{% endblock content %}

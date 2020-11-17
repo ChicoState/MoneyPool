@@ -19,4 +19,9 @@ urlpatterns = [
     path('suggestions/<int:question_id>/', views.suggestionDetail, name = 'details'),
     path('suggestions/<int:question_id>/results', views.suggestionResults, name = 'results'),
     path('suggestions/<int:question_id>/vote', views.suggestionVote, name = 'vote'),
+<<<<<<< Updated upstream
 ]
+=======
+    path('addSuggestion/', views.addSuggestion, name ='addSuggestion'),
+    ]
+>>>>>>> Stashed changes

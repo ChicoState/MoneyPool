@@ -6,21 +6,49 @@
 
 {% endblock %}
 
-{% block title %}{{title}}{% endblock %}
+{% block title %}Add Suggestion{% endblock %}
 
-{% block header%}
-    <h1 class="text-center">Add a suggestion</h1>
-{% endblock header %}
+{% block main %}
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Add a Suggestion</h3>
+            </div>
 
-{% block content %}
+            <form method="POST">{% csrf_token %}
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="question">Add Question:</label>
+                                {{ question.question_text }}
+                            </div>
+                        </div>
+                    </div>
 
-<div class="grid-x grid-padding-x">
-  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
-    <form action="/addSuggestion/", method ="post">{% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="option">Choice: </label>
+                                {% for choice in Data %}
+                                    <input type="radio" name="choice" id="choice{{ choice.Author }}" value="{{ choice.id }}" />
+                                    <label for="choice{{ choice.Author }}">{{ choice.choice_text }}</label><br />
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
-            <input type="submit" value="Add suggestion." class="button"/>
-    </form>
-  </div>
+                    <div class="row">
+                        <hr/>
+                        <div class="col-lg-4">
+                            <button type="submit" class="btn btn-info">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
 </div>
-
 {% endblock content %}

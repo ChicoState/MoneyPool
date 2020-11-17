@@ -20,6 +20,8 @@ class Event(models.Model):
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('Date Published')
+    tripId = models.ForeignKey(Event, on_delete=models.CASCADE)
+    category = models.CharField(max_length=30, default = "")
 
 class Choice(models.Model):
 	question = models.ForeignKey(Question, on_delete=models.CASCADE)

@@ -77,33 +77,17 @@ class EventForm(forms.Form):
         return trip_instance
 
 
-class SuggestionForm(forms.Form):
+class addSuggestion(forms.Form):
     question = forms.CharField(
         label="What is your suggestion?",
         max_length=140,
         required=True,
     )
     choice_text = forms.CharField(
-        label="Choice 1:",
+        label="Choice: ",
         max_length=100,
         required=True,
     )
-    choice_text = forms.CharField(
-        label="Choice 2:",
-        max_length=100,
-        required=True,
-    )
-    choice_text = forms.CharField(
-        label="Choice 3:",
-        max_length=100,
-        required=True,
-    )
-    choice_text = forms.CharField(
-        label="Choice 4:",
-        max_length=100,
-        required=True,
-    )
-
     def save(self, request, commit=True):
         questionSave = models.Question(
             question = self.cleaned_data["question"],

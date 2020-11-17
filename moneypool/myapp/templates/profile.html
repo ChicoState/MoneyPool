@@ -10,42 +10,47 @@
 {% block header%}
    <div class="container">   
       <div class="row">
-         <div class="col-md-4"></div>
-         <div class="col-md-3">
+         <!-- <div class="col-md-3"></div> -->
+         <div class="col-md-11">
              <h1 class="text-center text-dark">{{ name }}</h1>
          </div>
-         <div class="col-md-5">
-      {% if not button and fromreqs%}
-         <div class="dropdown">
-            <p class="fr">Friend Requests: <span class="link">{{fromreqs}}</span></p>
-            <div class="dropdown-content">
-               {% friend_requests request.user %} <!-- friend_requests.html -->
-            </div>
+         <div class="col-md-1">
+            {% if not button and fromreqs%}
+               <div class="dropdown">
+                  <p class="fr">Friend Requests: <span class="link">{{fromreqs}}</span></p>
+                  <div class="dropdown-content">
+                     {% friend_requests request.user %} <!-- friend_requests.html -->
+                  </div>
+               </div>
+         
+            {% endif %}
          </div>
-   
-      {% endif %}
+      </div>
+      <div class="row">
+         <div class="col-md-12">
+         {% if not arefriends and button and not sentreqs %}
+            <form action="/friendship/friend/add/{{to}}/" method='POST'> {% csrf_token %}
+               <input type="submit" class="button expanded" value="Add Friend"/>
+            </form>
+            {% if messages %}
+               <ul class="messages">
+                  {% for message in messages %}
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                  {% endfor %}
+               </ul>
+            {% endif %}
+         {% endif %}
          </div>
       </div>
    </div>
-   {% if not arefriends and button and not sentreqs %}
-      <form action="/friendship/friend/add/{{to}}/" method='POST'> {% csrf_token %}
-         <input type="submit" class="button expanded" value="Add Friend"/>
-      </form>
-      {% if messages %}
-         <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-         </ul>
-      {% endif %}
-   {% endif %}
 {%endblock header%}
+
 <!-- Trip Table -->
 {% block content %}
    <div class="container">
       <div class="row">
          <div class="col-md-3"></div>
-         <div class="col-md-9">
+         <div class="col-md-6">
             <h2 class="text-center">{{tripTitle}}</h2>
             <table class="table table-hover table-bordered">
                <tr class="thead-dark">
@@ -60,14 +65,12 @@
                {% endfor %}
             </table>
          </div>
-        
-            <!-- Maybe -->
-         </div>
+         <div class="col-md-3"></div>
       </div>
       {% if attending %}
          <div class="row">
             <div class="col-md-3"></div>
-            <div class="col-md-9">
+            <div class="col-md-6">
                <h2 class="text-center">{{attendingTitle}}</h2>
                <table class="table table-hover table-bordered">
                   <tr class="thead-dark">
@@ -82,18 +85,19 @@
                   {% endfor %}
                </table>
             </div>
+            <div class="col-md-3"></div>
          </div>
       {% endif %}
       <div class="row">
          <div class="col-md-3"></div>
-         <div class="col-md-5">
+         <div class="col-md-3">
             {% if not button %}
                <h2>Friends</h2>
                {% friends request.user %}
 
             {% endif %}
          </div>
-         <div class="col-md-4">
+         <div class="col-md-3">
             {% if not button %}
             <h2>Trip Invites</h2>
             <ul>
@@ -103,6 +107,7 @@
             </ul>
             {% endif %}
          </div>
+         <div class="col-md-3"></div>
       </div>
    </div>
    <!-- ADD MORE CONTAINERS HERE -->

@@ -3,10 +3,10 @@
     background-color: black;
     z-index: 1000;
     width: 100%;
-    padding-left: 0px;
-    padding-right: 0px;
     ul {
-        padding: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
         margin: 0;
         list-style: none;
         display: flex;
@@ -31,3 +31,11 @@
 .title {
     color: rgba(247, 239, 204, 0.945);
 }
+
+.details{
+    margin-top: 10px;
+}
+header{
+    width: 100vw;
+}
+

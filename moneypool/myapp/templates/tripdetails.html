@@ -7,9 +7,11 @@
 <link rel="stylesheet" href="{% static "css/tripdetails.css" %}">
 {% endblock css %}
 {% block header%}
-<div class="container">
+{% endblock header %}
+
+{% block content %}
+<div class="container-fluid">
   <div class="row">
-      <!-- <div class="col-md-3"></div> -->
       <div class="col-md-12">
         <nav id="navbar">
           <h1 class="text-center title"> {{title}}</h1>
@@ -20,14 +22,8 @@
           </ul>
         </nav>
       </div>
-    </div>
   </div>
 </div>
-
-{% endblock header %}
-
-{% block content %}
-
 <div class="container">
   <div class="row">
       <div class="col-md-12">
@@ -53,7 +49,7 @@
           {% endif %}
       </div>
   </div>
-  <div class="row">
+  <div class="row details">
     <div class="col-md-12">
       <h3 class="text-center"> Event Details</h3>
         <p class="text-center"> Where are we going: {{title}} </p>

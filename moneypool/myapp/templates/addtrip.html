@@ -17,7 +17,7 @@
 <div class="container">
    <div class="row">
       <div class="col-md-3"></div>
-      <div class="col-md-9">
+      <div class="col-md-6">
          <form action="/addtrip/", method ="post">{% csrf_token %}
             {{form}}
             <p>Invite Friends:</p>
@@ -30,9 +30,8 @@
                </div>
                <input type="submit" value="Create New Trip" class="button"/>
          </form>
-         <p>{{status}}</p>
-
       </div>
+      <div class="col-md-3"></div>
   </div>
 </div>
 

@@ -19,10 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),
-<<<<<<< HEAD
-    path('friendship/', include('friendship.urls')),
-    #path('suggestions/', include('myapp.urls', namespace = "suggestions"))
-
-=======
->>>>>>> tripSuggestions
+    path('friendship/', include('friendship.urls'))
 ]

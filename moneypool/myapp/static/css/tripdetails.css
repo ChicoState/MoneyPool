@@ -1,0 +1,49 @@
+/*NAVIGATION*/
+#navbar {
+  background-color: black;
+  z-index: 1000;
+  width: 100%;
+}
+
+#navbar ul {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  margin: 0;
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+#navbar ul li {
+  padding: 15px 5px;
+  text-transform: uppercase;
+}
+
+#navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 120%;
+}
+
+#navbar a:hover {
+  font-weight: bold;
+  color: rgba(247, 239, 204, 0.945);
+  background-color: rgba(247, 124, 75, 0.199);
+}
+
+.title {
+  color: rgba(247, 239, 204, 0.945);
+}
+
+.details {
+  margin-top: 10px;
+}
+
+header {
+  width: 100vw;
+}
+/*# sourceMappingURL=tripdetails.css.map */

@@ -3,4 +3,23 @@ $black: rgba(14, 13, 13, 0.493);
 
 body{
     background-color: $orange;
+
+
+    .wrapper{
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    #sidebar {
+        min-width: 250px;
+        // max-width: 15vw;
+        min-height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+    }
 }
+
+

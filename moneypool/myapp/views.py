@@ -374,3 +374,22 @@ def suggestionVote(request, question_id):
 		tempVote.votes += 1
 		tempVote.save()
 		return HttpResponseRedirect(reverse('suggestions:results', args=(queryset.id,)))
+
+def addSuggestion(request, question_id):
+	queryset = models.Choice.objects.all()
+	queryset2 = models.Question.objects.get(id=question_id)
+	question_set = []
+	for e in queryset:
+		if e.question.id == question_id:
+			if e.question.tripId.author == request.user:
+				question_set += [{
+					"Suggestion":e.question.question_text,
+					"Choices": e.choice_text,
+					"Author": e.question.id,
+					"choice_text": e.choice_text,
+				}]
+	context = {
+		"Data": question_set,
+		"question": queryset2,
+	}
+	return render(request, 'suggestionDetail.html', context=context)

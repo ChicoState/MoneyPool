@@ -26,7 +26,7 @@ class RegistrationForm(UserCreationForm):
         required=True
     )
     last_name = forms.CharField(
-        label="last_name", 
+        label="last_name",
         required=True
     )
     username = forms.CharField(
@@ -78,4 +78,23 @@ class EventForm(forms.Form):
         return trip_instance
 
 
-
+class addSuggestion(forms.Form):
+    question = forms.CharField(
+        label="What is your suggestion?",
+        max_length=140,
+        required=True,
+    )
+    choice_text = forms.CharField(
+        label="Choice: ",
+        max_length=100,
+        required=True,
+    )
+    def save(self, request, commit=True):
+        questionSave = models.Question(
+            question = self.cleaned_data["question"],
+            choice_text = self.cleaned_data["choice_text"],
+            author = request.user
+        )
+        if commit:
+            questionSave.save()
+        return questionSave

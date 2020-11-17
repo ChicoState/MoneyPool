@@ -26,6 +26,7 @@ urlpatterns = [
     path('populateTables/', views.populateTrips),
     path('populateUsers/', views.populateUsers),
     path('suggestions/', views.suggestionIndex, name ='suggestionsIndex'),
+    path('addsuggestion/<int:question_id>/', views.addSuggestion),
     path('suggestions/<int:question_id>/', views.suggestionDetail, name = 'details'),
     path('suggestions/<int:question_id>/results', views.suggestionResults, name = 'results'),
     path('suggestions/<int:question_id>/vote', views.suggestionVote, name = 'vote'),

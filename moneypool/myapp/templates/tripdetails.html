@@ -3,26 +3,34 @@
 {% load static %}
 
 {% block title %}{{title}}{% endblock %}
-
+{% block css %}
+<link rel="stylesheet" href="{% static "css/tripdetails.css" %}">
+{% endblock css %}
 {% block header%}
-    <h1 class="text-center"> {{title}}</h1>
-{% endblock header %}
+<div class="container">
+  <div class="row">
+      <!-- <div class="col-md-3"></div> -->
+      <div class="col-md-12">
+        <nav id="navbar">
+          <h1 class="text-center title"> {{title}}</h1>
+          <ul>
+              <li><a href="#">Traveling</a></li>
+              <li><a href="#">Housing</a></li>
+              <li><a href="#">Food</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
 
-<style>
-.detailsDiv{
-  text-align: center;
-  border: 2px solid black;
-  margin: 20px;
-  padding: 20px;
-}
-</style>
+{% endblock header %}
 
 {% block content %}
 
-<div class="Container">
+<div class="container">
   <div class="row">
-      <div class="col-md-6"></div>
-      <div class="col-md-3">
+      <div class="col-md-12">
           {% if not isauthor and not isattending %}
               {% if isinvited %}
                   <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
@@ -44,12 +52,9 @@
             </form>
           {% endif %}
       </div>
-      <div class="col-md-3"></div>
-
   </div>
   <div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-9">
+    <div class="col-md-12">
       <h3 class="text-center"> Event Details</h3>
         <p class="text-center"> Where are we going: {{title}} </p>
         <p class="text-center"> When are we going: {{date}} </p>
@@ -57,29 +62,6 @@
     </div>
   </div>
 </div>
-<div class="container .detailsDiv">
-  <div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-6">
-      <table class="table table-hover table-bordered">
-          <tr class="thead-dark">
-            <th>Category</th>
-          </tr>
-          <tr type="button">
-              <td class="text-center">Traveling</td> 
-          </tr>
-          <tr type="button">
-              <td class="text-center">Housing</td> 
-          </tr>
-          <tr type="button">
-              <td class="text-center">Food</td> 
-          </tr>
-      </table>
-    </div>
-    <div class="col-md-2"></div>
-  </div>
-</div>
-
 
 
 {% endblock content %}

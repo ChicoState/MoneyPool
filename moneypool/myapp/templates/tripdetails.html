@@ -54,7 +54,19 @@
       <h3 class="text-center"> Event Details</h3>
         <p class="text-center"> Where are we going: {{title}} </p>
         <p class="text-center"> When are we going: {{date}} </p>
-        <p class="text-center"> How many are going: {{attendants}} </p>
+        <p class="text-center"> How many are going: {{attendeesCount}} </p>
+    </div>
+  </div>
+  <div class="row participants">
+    <div class="col-md-12 text-center">
+      <h3 class="text-center">Attendees</h3>
+      <ul>
+         {% for i in attendants %}
+         <li>
+          <a href="/profile/{{i.id}}">{{i.name}}</a>
+         </li>
+         {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

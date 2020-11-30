@@ -207,11 +207,18 @@ def tripDetails_view(request, tripID):
             t = models.Event.objects.get(id=tripID)
             tripInvites = models.TripInviteRequest.objects.all()
             allAttendees = models.TripAttendees.objects.all()
+            attendeesList  = []
             isattending = 0
             for a in allAttendees:
-                if a.userid == request.user:
-                    if a.tripid.id == tripID:
+                if a.tripid.id == tripID:
+                    if a.userid != request.user:
+                        attendeesList += [{
+                            "id" : a.userid.id,
+                            "name": a.userid.username
+                        }]
+                    if a.userid == request.user:
                         isattending = 1
+                
            
             isauthor = 1
             if t.author != request.user:
@@ -225,15 +232,15 @@ def tripDetails_view(request, tripID):
             context = {
                 "title": t.location,
                 "id": t.id,
+                "attendeesCount": t.attendants,
                 "date": t.date,
-                "attendants": t.attendants,
                 "public": t.public,
                 "page_name":"Moneypool",
                 "isauthor": isauthor,
                 "isattending": isattending,
                 "isinvited" : invited,
                 "date": t.date,
-                "attendants": t.attendants
+                "attendants": attendeesList
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -353,12 +360,12 @@ def populateTrips(request):
 
     all_users = User.objects.all()
     #### TRIPS ####
-    trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, 0, all_users[0], 1 )
-    trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 0, 0, all_users[0], 1 )
-    trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 0, 0, all_users[3], 1 )
-    trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 0, 0, all_users[1], 1 )
-    trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 0, 0, all_users[1], 1 )
-    trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 0, 0, all_users[2], 1 )
+    trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 1, 0, all_users[0], 1 )
+    trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 1, 0, all_users[0], 1 )
+    trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 1, 0, all_users[3], 1 )
+    trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 1, 0, all_users[1], 1 )
+    trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 1, 0, all_users[1], 1 )
+    trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 1, 0, all_users[2], 1 )
 
     return redirect("/login")
 

@@ -67,7 +67,7 @@ class EventForm(forms.Form):
         trip_instance = models.Event(
             location = self.cleaned_data["location"],
             date = self.cleaned_data["date"],
-            attendants = 0,
+            attendants = 1,
             invited = 0,
             public = self.cleaned_data["public"],
             author = request.user

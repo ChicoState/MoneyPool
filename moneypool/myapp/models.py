@@ -77,8 +77,8 @@ class TripInviteRequest(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('Date Published')
-    end_date = models.DateTimeField('Date Ended')
+    pub_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     tripId = models.ForeignKey(Event, on_delete=models.CASCADE)
     category = models.CharField(max_length=30, default = "")
 

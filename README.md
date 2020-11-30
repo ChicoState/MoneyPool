@@ -33,4 +33,7 @@ Developers:
 * Create ability for users to invite friends to join their trips
 * Create ability to join a trip marked as public by a friend, or accept friend's invite to join a trip, and view all these joined trips on their profile
 * Create ability to un-join a trip that was joined
+* Create ability for trip owners to create suggestions on possible amenities or activities for the trip   
+* Create ability for users to see who else is participating in the trip.   
+
   

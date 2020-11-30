@@ -6,15 +6,15 @@ admin.site.register(models.Event)
 admin.site.register(models.TripInviteRequest)
 admin.site.register(models.TripAttendees)
 
-# class ChoiceInline(admin.TabularInline):
-#     model = models.Choice
-#     extra = 3
+class ChoiceInline(admin.TabularInline):
+    model = models.Choice
+    extra = 3
 
-# class QuestionAdmin(admin.ModelAdmin):
-#     fieldsets = [
-#         (None,               {'fields': ['question_text']}),
-#         ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
-#     ]
- #   inlines = [ChoiceInline]
+class QuestionAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None,               {'fields': ['question_text']}),
+        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
+    ]
+    inlines = [ChoiceInline]
 
-admin.site.register(models.Question)
+admin.site.register(models.Question, QuestionAdmin)

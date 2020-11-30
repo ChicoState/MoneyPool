@@ -27,12 +27,18 @@
   </div>
 </div>
 
-<div>
-    <div>
-        <h1 class="text-center title">{{catTitle}} </h1>
+<div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+          <h1 class="text-center title">{{catTitle}} </h1>
+          <button class="button text-center" onclick="window.location.href='/addSuggestion/{{catTitle}}/{{id}}'">Add Suggestion</button>
+
+      </div>
+    </div>
+    <div class="row">
         <ul>
             {%for i in qList%}
-                <li>{{i.text}}</li>
+                <a href="/displaysuggestion/{{i.id}}"><li>{{i.text}}</li></a>
             {%endfor%}
         </ul>
     </div>

@@ -84,15 +84,9 @@ class addSuggestion(forms.Form):
         max_length=140,
         required=True,
     )
-    choice_text = forms.CharField(
-        label="Choice: ",
-        max_length=100,
-        required=True,
-    )
     def save(self, request, commit=True):
         questionSave = models.Question(
             question = self.cleaned_data["question"],
-            choice_text = self.cleaned_data["choice_text"],
             author = request.user
         )
         if commit:

@@ -250,6 +250,9 @@ def categoryPageView(request, tripID, category_ID):
     if request.user.is_authenticated:
         if request.method == "GET":
             t = models.Event.objects.get(id=tripID)
+            owner = 0
+            if request.user.id == t.author.id:
+                owner = 1
 
             cat = " "
             if(category_ID == 1):
@@ -267,14 +270,16 @@ def categoryPageView(request, tripID, category_ID):
                 if(a.category == cat):
                     if(a.tripId.id == tripID):
                         questionList += [{
-                            "text":a.question_text 
+                            "text":a.question_text,
+                            "id": a.id
                         }]
 
             context = {
                 "catTitle":cat,
                 "name":t.location,
                 "id":tripID,
-                "qList":questionList
+                "qList":questionList,
+                "owner": owner
             }
 
             return render(request,"categoryPage.html", context=context)
@@ -416,7 +421,7 @@ def suggestionVote(request, question_id):
 		tempVote.save()
 		return HttpResponseRedirect(reverse('suggestions:results', args=(queryset.id,)))
 
-def addSuggestion(request, question_id):
+def displaySuggestion(request, question_id):
 	queryset = models.Choice.objects.all()
 	queryset2 = models.Question.objects.get(id=question_id)
 	question_set = []
@@ -434,3 +439,21 @@ def addSuggestion(request, question_id):
 		"question": queryset2,
 	}
 	return render(request, 'suggestionDetail.html', context=context)
+
+def addSuggestion(request, category, trip_id):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form_instance = forms.addSuggestion(request.POST)
+            if form_instance.is_valid():
+                add_suggestion = form_instance.save(request=request)
+                add_suggestion.category = category
+                add_suggestion.save()
+    else:
+        form_instance = forms.addSuggestion()
+
+    context = {
+		"form": form_instance,
+        "tripId": trip_id
+	}
+    
+    return render(request, 'addSuggestion.html', context=context)

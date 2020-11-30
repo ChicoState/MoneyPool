@@ -133,7 +133,6 @@ def profile2(request, id):
                         "id": e.id
                     }]
 
-            
             context = {
                 "title":user.username,
                 "tripTitle": user.first_name + "'s Trips",
@@ -237,6 +236,41 @@ def tripDetails_view(request, tripID):
                 "attendants": t.attendants
             }
             return render(request, "tripdetails.html", context=context)
+        else:
+            return redirect('/login/')
+
+def categoryPageView(request, tripID, category_ID):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            t = models.Event.objects.get(id=tripID)
+
+            cat = " "
+            if(category_ID == 1):
+                cat = "Traveling"
+            elif(category_ID == 2):
+                cat = "Housing"
+            elif(category_ID == 3):
+                cat = "Food"
+            else:
+                cat = "..."
+
+            allQuestions = models.Question.objects.all()
+            questionList = []
+            for a in allQuestions:
+                if(a.category == cat):
+                    if(a.tripId.id == tripID):
+                        questionList += [{
+                            "text":a.question_text 
+                        }]
+
+            context = {
+                "catTitle":cat,
+                "name":t.location,
+                "id":tripID,
+                "qList":questionList
+            }
+
+            return render(request,"categoryPage.html", context=context)
         else:
             return redirect('/login/')
 

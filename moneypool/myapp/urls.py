@@ -30,4 +30,5 @@ urlpatterns = [
     path('suggestions/<int:question_id>/', views.suggestionDetail, name = 'details'),
     path('suggestions/<int:question_id>/results', views.suggestionResults, name = 'results'),
     path('suggestions/<int:question_id>/vote', views.suggestionVote, name = 'vote'),
+    path('tripdetails/<int:tripID>/categoryPage/<int:category_ID>/', views.categoryPageView),
     ]

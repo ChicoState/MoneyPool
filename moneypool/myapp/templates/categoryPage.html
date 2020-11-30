@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{tripID}}{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static "css/tripdetails.css" %}">
+{% endblock css %}
+{% block header%}
+
+{% endblock header%}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+      <div class="col-md-12">
+        <nav id="navbar">
+          <h1 class="text-center title">{{name}} </h1>
+          <ul>
+              <li><a href="/tripdetails/{{id}}/categoryPage/1">Traveling</a></li>
+              <li><a href="/tripdetails/{{id}}/categoryPage/2">Housing</a></li>
+              <li><a href="/tripdetails/{{id}}/categoryPage/3">Food</a></li>
+          </ul>
+        </nav>
+      </div>
+  </div>
+</div>
+
+<div>
+    <div>
+        <h1 class="text-center title">{{catTitle}} </h1>
+        <ul>
+            {%for i in qList%}
+                <li>{{i.text}}</li>
+            {%endfor%}
+        </ul>
+    </div>
+</div>
+
+{% endblock content %}

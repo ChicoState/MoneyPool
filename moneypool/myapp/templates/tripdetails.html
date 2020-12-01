@@ -58,26 +58,22 @@
   <div class="row participants">
     <div class="col-md-12 text-center">
       <h3 class="text-center">Attendees</h3>
-      <ul>
          {% for i in attendants %}
          <li>
           <a href="/profile/{{i.id}}">{{i.name}}</a>
          </li>
          {% endfor %}
-      </ul>
     </div>
   </div>
   {% endif %}
 
-  {%if travel %}
+  {% if travel %}
   <div class="row travel">
       <div class="col-md-12 text-center">
         <h3 class="text-center">Travel</h3>
-        <ul>
           {% for d in travelq %}
               <li>{{d.question_text}}: --- {{d.result}}</li>
           {% endfor %}
-        </ul>
       </div>
   </div>
   {% endif %}

@@ -82,10 +82,12 @@ class Question(models.Model):
     tripId = models.ForeignKey(Event, on_delete=models.CASCADE)
     category = models.CharField(max_length=30, default = "")
     result = models.CharField(max_length=200, default = "")
+    resultID = models.IntegerField(default=0)
     objects = EventManager()
 
-    def updateChoice(self, choice):
+    def updateChoice(self, choice, id):
         self.result = choice
+        self.resultID = id
         self.save()
         return True
 

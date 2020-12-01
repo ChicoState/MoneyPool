@@ -53,6 +53,7 @@ def cancelJoin(request, id):
 def endvote(request, question_id):
     if request.method == "POST":
         winner = ""
+        winnerid = ""
         question = models.Question.objects.get(id=question_id)
         queryset = models.Choice.objects.all()
         choice_list = []
@@ -72,6 +73,7 @@ def endvote(request, question_id):
         winners2 = []
         if len(winners) == "1":
             winner = winners[0].choice_text
+            winnerid = winners[0].id
         else:
             mincost = 999999
             for w in winners:
@@ -82,11 +84,13 @@ def endvote(request, question_id):
                     winners2 += [w]
         if len(winners2) == "1":
             winner = winners2[0].choice_text
+            winnerid = winners2[0].id
         else:
             num = random.randint(0, len(winners2)-1)
             winner = winners2[num].choice_text
-
-        question.updateChoice(winner)
+            winnerid = winners2[num].id
+        
+        question.updateChoice(winner, winnerid)
         url = '/tripdetails/' + str(question.tripId.id)
         return redirect(url)
 
@@ -290,7 +294,7 @@ def tripDetails_view(request, tripID):
                         if q.result != "":
                             housingq += [q]
                             housing = 1
-                    if q.category == "Travel":
+                    if q.category == "Traveling":
                         if q.result != "":
                             travelq += [q]
                             travel = 1

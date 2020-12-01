@@ -31,8 +31,9 @@
     <div class="row">
       <div class="col-md-12 text-center">
           <h1 class="text-center title">{{catTitle}} </h1>
-          <button class="button text-center" onclick="window.location.href='/addSuggestion/{{catTitle}}/{{id}}'">Add Suggestion</button>
-
+          {%if owner %}
+            <button class="button text-center" onclick="window.location.href='/addSuggestion/{{catTitle}}/{{id}}'">Add Suggestion</button>
+          {% endif %}
       </div>
     </div>
     <div class="row">

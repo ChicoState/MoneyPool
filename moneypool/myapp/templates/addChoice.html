@@ -6,14 +6,14 @@
 
 {% endblock %}
 
-{% block title %}Add Suggestion{% endblock %}
+{% block title %}Add Choice{% endblock %}
 
 {% block header %}
 <div class="container">
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-9">
-            <h1>Create a Suggestion</h1>
+            <h1>Create a Choice</h1>
         </div>
     </div>
 </div>
@@ -22,10 +22,9 @@
 {% block content %}
 <div class="container">
     <div class="row">
-       <form action="/addSuggestion/{{category}}/{{tripId}}/", method ="post">{% csrf_token %}
-            {{form}}
-            <input type="submit" value="Create Suggestion" class="button"/>
-        </form>
+       <form action="/addChoice/{{sugg_id}}/", method ="post">{% csrf_token %}
+       {{form}}
+       <input type="submit" value="Create Choice" class="button"/>
     </div>
 </div>
 {% endblock content %}

@@ -28,6 +28,7 @@ urlpatterns = [
     path('suggestions/', views.suggestionIndex, name ='suggestionsIndex'),
     path('displaysuggestion/<int:question_id>/', views.displaySuggestion),
     path('addSuggestion/<str:category>/<int:trip_id>/', views.addSuggestion),
+    path('addChoice/<int:sugg_id>/', views.addChoice, name='addChoice'),    
     path('suggestions/<int:question_id>/', views.suggestionDetail, name = 'details'),
     path('suggestions/<int:question_id>/results', views.suggestionResults, name = 'results'),
     path('suggestions/<int:question_id>/vote', views.suggestionVote, name = 'vote'),

@@ -79,16 +79,43 @@ class EventForm(forms.Form):
 
 
 class addSuggestion(forms.Form):
-    question = forms.CharField(
+    question_text = forms.CharField(
         label="What is your suggestion?",
         max_length=140,
         required=True,
     )
-    def save(self, request, commit=True):
+    end_date = forms.DateField(
+        label="When is the vote ending?",
+        widget=forms.SelectDateWidget(empty_label = ("Choose Year", "Choose Month", "Choose Day"))
+    )
+
+    def save(self, request, category, trip_id, commit=True):
         questionSave = models.Question(
-            question = self.cleaned_data["question"],
-            author = request.user
+            question_text = self.cleaned_data["question_text"],
+            tripId = trip_id,
+            category = category,
+            end_date = self.cleaned_data["end_date"],
         )
         if commit:
             questionSave.save()
         return questionSave
+
+class addChoice(forms.Form):
+    choice_text = forms.CharField(
+        label="What is a Choice?",
+        max_length=100,
+        required=True,
+    )
+    cost = forms.DecimalField(
+        label="What is the expected cost?",
+    )
+    def save(self, request, sugg_id, commit=True):
+        choiceSave = models.Choice(
+            choice_text = self.cleaned_data["choice_text"],
+            votes = 0,
+            question=sugg_id, 
+            cost = self.cleaned_data["cost"]
+        )
+        if commit:
+            choiceSave.save()
+        return choiceSave

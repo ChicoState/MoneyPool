@@ -445,15 +445,37 @@ def addSuggestion(request, category, trip_id):
         if request.user.is_authenticated:
             form_instance = forms.addSuggestion(request.POST)
             if form_instance.is_valid():
-                add_suggestion = form_instance.save(request=request)
-                add_suggestion.category = category
+                trip_key = models.Event.objects.get(id=trip_id)
+                add_suggestion = form_instance.save(request=request, category=category, trip_id=trip_key)
                 add_suggestion.save()
+                sugg_id = add_suggestion.id
+                url = "/addChoice/" + str(sugg_id)
+                return redirect(url, sugg_id=sugg_id)
     else:
         form_instance = forms.addSuggestion()
 
     context = {
 		"form": form_instance,
+        "category": category,
         "tripId": trip_id
 	}
     
     return render(request, 'addSuggestion.html', context=context)
+
+def addChoice(request, sugg_id):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form_instance = forms.addChoice(request.POST)
+            if form_instance.is_valid():
+                sugg = models.Question.objects.get(id=sugg_id)
+                add_choice = form_instance.save(request=request, sugg_id=sugg)
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        form_instance = forms.addChoice()
+
+    context = {
+		"form": form_instance,
+        "sugg_id": sugg_id
+	}
+    return render(request, 'addChoice.html', context=context)
+

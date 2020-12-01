@@ -19,8 +19,8 @@ class EventManager(models.Manager):
         invite = self.create(tripid=tripid, from_user=from_user, to_user=to_user)
         return invite
 
-    def create_choice(self, question, choice_text):
-        choice = self.create(question=question, choice_text = choice_text, votes=0)
+    # def create_choice(self, question, choice_text):
+    #     choice = self.create(question=question, choice_text = choice_text, votes=0)
 
 
 class Event(models.Model):
@@ -80,13 +80,16 @@ class TripInviteRequest(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     tripId = models.ForeignKey(Event, on_delete=models.CASCADE)
     category = models.CharField(max_length=30, default = "")
+
+    objects = EventManager()
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+
     objects = EventManager()

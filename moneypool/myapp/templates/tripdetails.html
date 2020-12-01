@@ -14,19 +14,7 @@
   <div class="row">
       <div class="col-md-12">
         <nav id="navbar">
-          <h1 class="text-center title"> {{title}}</h1>
-          <ul>
-              <li><a href="/tripdetails/{{id}}/categoryPage/1">Traveling</a></li>
-              <li><a href="/tripdetails/{{id}}/categoryPage/2">Housing</a></li>
-              <li><a href="/tripdetails/{{id}}/categoryPage/3">Food</a></li>
-          </ul>
-        </nav>
-      </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row">
-      <div class="col-md-12">
+          <h1 class="text-center title"> {{title}}
           {% if not isauthor and not isattending %}
               {% if isinvited %}
                   <form action="/acceptTripReq/{{id}}/" method='POST'> {% csrf_token %}
@@ -47,8 +35,17 @@
               <input type="submit" class="button" value="Cancel Join"/>
             </form>
           {% endif %}
+        </h1>
+          <ul>
+              <li><a href="/tripdetails/{{id}}/categoryPage/1">Traveling</a></li>
+              <li><a href="/tripdetails/{{id}}/categoryPage/2">Housing</a></li>
+              <li><a href="/tripdetails/{{id}}/categoryPage/3">Food</a></li>
+          </ul>
+        </nav>
       </div>
   </div>
+</div>
+<div class="container">
   <div class="row details">
     <div class="col-md-12">
       <h3 class="text-center"> Event Details</h3>
@@ -57,6 +54,7 @@
         <p class="text-center"> How many are going: {{attendeesCount}} </p>
     </div>
   </div>
+  {% if attendants %}
   <div class="row participants">
     <div class="col-md-12 text-center">
       <h3 class="text-center">Attendees</h3>
@@ -69,6 +67,44 @@
       </ul>
     </div>
   </div>
+  {% endif %}
+
+  {%if travel %}
+  <div class="row travel">
+      <div class="col-md-12 text-center">
+        <h3 class="text-center">Travel</h3>
+        <ul>
+          {% for d in travelq %}
+              <li>{{d.question_text}}: --- {{d.result}}</li>
+          {% endfor %}
+        </ul>
+      </div>
+  </div>
+  {% endif %}
+
+  {%if housing %}
+  <div class="row housing">
+      <div class="col-md-12 text-center">
+        <h3 class="text-center">Housing</h3>
+        {% for d in housingq %}
+            <li>{{d.question_text}}: --- {{d.result}}</li>
+        {% endfor %}
+      </div>
+  </div>
+  {%endif%}
+
+  {%if food %}
+  <div class="row food">
+      <div class="col-md-12 text-center">
+        <h3 class="text-center">Food</h3>
+        {% for d in foodq %}
+            <li>{{d.question_text}}: --- {{d.result}}</li>
+        {% endfor %}
+      </div>
+  </div>
+  {% endif %}
+
+  {{count}}
 </div>
 
 

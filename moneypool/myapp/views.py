@@ -12,6 +12,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 #from . import forms
 import datetime #for testing mytrips
+import random
 # Create your views here.
 
 def sendFR(request, id):
@@ -43,6 +44,52 @@ def cancelJoin(request, id):
                 if a.userid.id == request.user.id:
                     a.remove(id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+#This function is for the trip owner to manually end the voting
+#It finds the question, and finds all the choices associated with it
+#It cycles through all the choices and adds the ones with the highest # of votes
+#to a list... If there is more than 1 choice, it will choose the lower cost choice
+#If still more than one choice, it chooses a random choice to break the tie
+def endvote(request, question_id):
+    if request.method == "POST":
+        winner = ""
+        question = models.Question.objects.get(id=question_id)
+        queryset = models.Choice.objects.all()
+        choice_list = []
+        for e in queryset:
+            if e.question.id == question_id:
+                choice_list += [e]
+        maxv = 0
+        for c in choice_list:
+            if c.votes > maxv:
+                maxv = c.votes
+        
+        winners = []
+        for c in choice_list:
+            if c.votes == maxv:
+                winners += [c]
+
+        winners2 = []
+        if len(winners) == "1":
+            winner = winners[0].choice_text
+        else:
+            mincost = 999999
+            for w in winners:
+                if w.cost < mincost:
+                    mincost = w.cost
+            for w in winners:
+                if w.cost == mincost:
+                    winners2 += [w]
+        if len(winners2) == "1":
+            winner = winners2[0].choice_text
+        else:
+            num = random.randint(0, len(winners2)-1)
+            winner = winners2[num].choice_text
+
+        question.updateChoice(winner)
+        url = '/tripdetails/' + str(question.tripId.id)
+        return redirect(url)
+
 
 #Login View Basic Profile
 @login_required(login_url='/login/')
@@ -229,6 +276,28 @@ def tripDetails_view(request, tripID):
                 if o.to_user.username == request.user.username: 
                     if o.tripid.id == tripID:
                         invited = 1
+            
+            travel = 0
+            housing = 0
+            food = 0
+            questions = models.Question.objects.all()
+            travelq = []
+            housingq = []
+            foodq = []
+            for q in questions:
+                if q.tripId.id == tripID:
+                    if q.category == "Housing":
+                        if q.result != "":
+                            housingq += [q]
+                            housing = 1
+                    if q.category == "Travel":
+                        if q.result != "":
+                            travelq += [q]
+                            travel = 1
+                    if q.category == "Food":
+                        if q.result != "":
+                            foodq += [q]
+                            food = 1
             context = {
                 "title": t.location,
                 "id": t.id,
@@ -240,7 +309,13 @@ def tripDetails_view(request, tripID):
                 "isattending": isattending,
                 "isinvited" : invited,
                 "date": t.date,
-                "attendants": attendeesList
+                "attendants": attendeesList, 
+                "housing": housing,
+                "travel": travel,
+                "food": food,
+                "travelq": travelq,
+                "foodq": foodq,
+                "housingq": housingq
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -387,7 +462,7 @@ def acceptTripReq(request, id):
 #This is where the suggestion list of the trip is
 @login_required(login_url='/login/')
 def suggestionIndex(request):
-	question_list = models.Question.objects.all().order_by('pub_date')
+	question_list = models.Question.objects.all()
 	context = {
 		'latest_question_list': question_list
 	}
@@ -422,23 +497,27 @@ def suggestionVote(request, question_id):
 		return HttpResponseRedirect(reverse('suggestions:results', args=(queryset.id,)))
 
 def displaySuggestion(request, question_id):
-	queryset = models.Choice.objects.all()
-	queryset2 = models.Question.objects.get(id=question_id)
-	question_set = []
-	for e in queryset:
-		if e.question.id == question_id:
-			if e.question.tripId.author == request.user:
-				question_set += [{
-					"Suggestion":e.question.question_text,
-					"Choices": e.choice_text,
-					"Author": e.question.id,
-					"choice_text": e.choice_text,
-				}]
-	context = {
-		"Data": question_set,
-		"question": queryset2,
-	}
-	return render(request, 'suggestionDetail.html', context=context)
+    queryset = models.Choice.objects.all()
+    queryset2 = models.Question.objects.get(id=question_id)
+    question_set = []
+    owner = 0
+    for e in queryset:
+        if e.question.id == question_id:
+            if e.question.tripId.author == request.user:
+                owner = 1
+            question_set += [{
+                "Suggestion":e.question.question_text,
+                "Choices": e.choice_text,
+                "Author": e.question.id,
+                "choice_text": e.choice_text,
+            }]
+
+    context = {
+        "Data": question_set,
+        "question": queryset2,
+        "owner": owner
+    }
+    return render(request, 'suggestionDetail.html', context=context)
 
 def addSuggestion(request, category, trip_id):
     if request.method == "POST":

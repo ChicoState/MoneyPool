@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', views.register),
     path('index/', views.index),
     path('addtrip/', views.addTrip_form_view),
+    path('endvote/<int:question_id>/', views.endvote),
     path('viewtrips/', views.viewTrips_view),
     path('profile/', views.index),
     path('findUsers/', views.findUsers),

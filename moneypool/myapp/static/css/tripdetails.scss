@@ -3,6 +3,10 @@
     background-color: black;
     z-index: 1000;
     width: 100%;
+    text-align: center;
+    form {
+        display: inline;
+    }
     ul {
         padding-left: 10px;
         padding-right: 10px;

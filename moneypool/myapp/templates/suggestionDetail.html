@@ -2,22 +2,41 @@
 
 {% load static %}
 
+{% block header%}
+
+{% endblock header%}
+
 {% block content %}
 
-<div class="grid-x grid-padding-x">
-  <div class="large-4 medium-4 small-12 large-offset-4 medium-offset-4 cell">
-    <h1>{{ question.question_text }}</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <h1>{{ question.question_text }}</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+        {% endif %}
+        <form action="{% url 'suggestions:vote' question.id %}" method="post">{% csrf_token %}
+            {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }} -- ${{choice.cost}}</label><br />
+            {% endfor %}
+            <input type="submit" value="Vote" class="button"/>
+        </form>
+    </div>
+    <div class="row">
+      <div class="col-md-3"></div>
+      {% if owner %}
+      <h3>I am the owner of this trip</h3>
+      <form action="/endvote/{{question.id}}/" method="post">{% csrf_token %}
+       
+        <input type="submit" value="End Vote" class="button"/>
+      </form>
 
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    <form action="{% url 'suggestions:vote' question.id %}" method="post">
-	    {% csrf_token %}
-	    {% for choice in question.choice_set.all %}
-	        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-	        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-	    {% endfor %}
-	    <input type="submit" value="Vote" />
-    </form>
-  </div>
+      {% endif %}
+    </div>
 </div>
 
 {% endblock content %}

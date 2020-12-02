@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}
+    <h1 class="text-center">Invite Friends to {{trip.location}}</h1>
+{% endblock header %}
+
+{% block content %}
+ <form action="/addFriends/{{trip.id}}/", method ="POST">{% csrf_token %}
+    {%for f in friends %}
+        <input type="checkbox" class="check" id={{f.id}} name="{{f}}" value="{{f}}">
+        <label for={{f.id}} class="friendLabel">{{f}}</label><br>  
+    {% endfor %}
+    <input type="submit" value="Invite Friends" class="button"/>
+</form>
+{% endblock content%}

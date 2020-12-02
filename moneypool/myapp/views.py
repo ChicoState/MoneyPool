@@ -562,3 +562,19 @@ def addChoice(request, sugg_id):
 	}
     return render(request, 'addChoice.html', context=context)
 
+def addFriends(request, tripID):
+    friends = Friend.objects.friends(request.user)
+    add_trip = models.Event.objects.get(id=tripID)
+    if request.method == "POST":
+        invites = request.POST.get("friends", None)
+        for f in friends:
+            if f.username in request.POST:
+                myrequest = models.TripInviteRequest.objects.create_trip_invite(add_trip, request.user, f)
+       
+    
+    context = {
+        "friends": friends,
+        "trip": add_trip,
+        "title": "Invite Friends"
+    }
+    return render(request, 'addFriends.html', context=context)

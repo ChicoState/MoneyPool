@@ -35,6 +35,11 @@
               <input type="submit" class="button" value="Cancel Join"/>
             </form>
           {% endif %}
+          {% if isauthor %}
+            <form action="/addFriends/{{id}}/" method='GET'> {% csrf_token %}
+                <input type="submit" class="button" value="Invite Friends"/>
+            </form>
+          {% endif %}
         </h1>
           <ul>
               <li><a href="/tripdetails/{{id}}/categoryPage/1">Traveling</a></li>

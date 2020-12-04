@@ -37,6 +37,12 @@
       </div>
     </div>
     <div class="row">
+      <p class="text-center">
+        Cost:
+        {{ categoryCost }}
+      </p>
+    </div>
+    <div class="row">
         <ul>
             {%for i in qList%}
                 <a href="/displaysuggestion/{{i.id}}"><li>{{i.text}}</li></a>

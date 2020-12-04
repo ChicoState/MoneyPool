@@ -64,7 +64,7 @@ def endvote(request, question_id):
         for c in choice_list:
             if c.votes > maxv:
                 maxv = c.votes
-        
+
         winners = []
         for c in choice_list:
             if c.votes == maxv:
@@ -89,11 +89,10 @@ def endvote(request, question_id):
             num = random.randint(0, len(winners2)-1)
             winner = winners2[num].choice_text
             winnerid = winners2[num].id
-        
+
         question.updateChoice(winner, winnerid)
         url = '/tripdetails/' + str(question.tripId.id)
         return redirect(url)
-
 
 #Login View Basic Profile
 @login_required(login_url='/login/')
@@ -129,7 +128,7 @@ def index(request):
                             "from":t.from_user.username,
                             "tripID": t.tripid.id,
                         }]
-                        
+
                 for a in attending:
                     if a.userid.username == request.user.username:
                         attending_list += [{
@@ -180,7 +179,7 @@ def profile2(request, id):
                         "location":e.location,
                         "date":e.date,
                         "attendants":e.attendants,
-                        "invited":e.invited, 
+                        "invited":e.invited,
                         "id": e.id
                     }]
 
@@ -189,7 +188,7 @@ def profile2(request, id):
                 "tripTitle": user.first_name + "'s Trips",
                 "page_name":"Moneypool",
                 "name": user.first_name,
-                "data": trip_list, 
+                "data": trip_list,
                 "button": button,
                 "from": request.user.id,
                 "to" : user.username,
@@ -269,18 +268,18 @@ def tripDetails_view(request, tripID):
                         }]
                     if a.userid == request.user:
                         isattending = 1
-                
-           
+
+
             isauthor = 1
             if t.author != request.user:
                isauthor = 0
-            
+
             invited = 0
             for o in tripInvites:
-                if o.to_user.username == request.user.username: 
+                if o.to_user.username == request.user.username:
                     if o.tripid.id == tripID:
                         invited = 1
-            
+
             travel = 0
             housing = 0
             food = 0
@@ -288,6 +287,14 @@ def tripDetails_view(request, tripID):
             travelq = []
             housingq = []
             foodq = []
+
+            trip_cost = 0
+            for f in questions:
+                if(f.tripId.id == tripID):
+                    if(f.result):
+                        result = models.Choice.objects.get(id=f.resultID)
+                        trip_cost += result.cost
+
             for q in questions:
                 if q.tripId.id == tripID:
                     if q.category == "Housing":
@@ -313,13 +320,15 @@ def tripDetails_view(request, tripID):
                 "isattending": isattending,
                 "isinvited" : invited,
                 "date": t.date,
-                "attendants": attendeesList, 
+                "attendants": attendeesList,
                 "housing": housing,
                 "travel": travel,
                 "food": food,
                 "travelq": travelq,
                 "foodq": foodq,
-                "housingq": housingq
+                "housingq": housingq,
+                "totalCost": trip_cost,
+                "totalPerCost": trip_cost/t.attendants
             }
             return render(request, "tripdetails.html", context=context)
         else:
@@ -345,6 +354,15 @@ def categoryPageView(request, tripID, category_ID):
 
             allQuestions = models.Question.objects.all()
             questionList = []
+
+            category_cost = 0
+            for f in allQuestions:
+                if(f.category == cat):
+                    if(f.tripId.id == tripID):
+                        if(f.result):
+                            result = models.Choice.objects.get(id=f.resultID)
+                            category_cost += result.cost
+
             for a in allQuestions:
                 if(a.category == cat):
                     if(a.tripId.id == tripID):
@@ -358,7 +376,8 @@ def categoryPageView(request, tripID, category_ID):
                 "name":t.location,
                 "id":tripID,
                 "qList":questionList,
-                "owner": owner
+                "owner": owner,
+                "categoryCost": category_cost
             }
 
             return render(request,"categoryPage.html", context=context)
@@ -439,7 +458,7 @@ def populateUsers(request):
     user4.save()
 
     return redirect("/login")
-     
+
 def populateTrips(request):
 
     all_users = User.objects.all()
@@ -542,7 +561,7 @@ def addSuggestion(request, category, trip_id):
         "category": category,
         "tripId": trip_id
 	}
-    
+
     return render(request, 'addSuggestion.html', context=context)
 
 def addChoice(request, sugg_id):
@@ -570,8 +589,8 @@ def addFriends(request, tripID):
         for f in friends:
             if f.username in request.POST:
                 myrequest = models.TripInviteRequest.objects.create_trip_invite(add_trip, request.user, f)
-       
-    
+
+
     context = {
         "friends": friends,
         "trip": add_trip,

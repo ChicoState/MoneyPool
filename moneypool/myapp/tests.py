@@ -76,3 +76,10 @@ class Attendee_Tests(TestCase):
         trip1 = Event.objects.get(id=1)
         att = trip1.attendants
         self.assertEqual(att, 2)
+
+    def test_cancel_attendees(self):
+        print("Method: test_cancel_attendees")
+        attendee1 = TripAttendees.objects.get(id=1)
+        attendee1.remove(1)
+        trip1 = Event.objects.get(id=1)
+        self.assertEqual(trip1.attendants, 1)

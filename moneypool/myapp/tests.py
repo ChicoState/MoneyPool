@@ -16,7 +16,7 @@ class EventModelTest(TestCase):
         user1.first_name = "Harry"
         user1.last_name = "Potter"
         user1.save()
-        Event.objects.create_event("Quittich Pitch", "2021-04-20", 1, 0, user1, 1 )
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
         pass #This is the part that makes the function only run once
 
     #All test functions go below here.... 
@@ -37,7 +37,7 @@ class EventModelTest(TestCase):
         inv = trip1.invited
         self.assertEqual(inv, 0)
     
-    #Ensure number of attendees is stored correctly
+    #Ensure number of attendees is stored correctly as 1 by default
     def test_attendees(self):
         print("Method: test_attendees")
         trip1 = Event.objects.get(id=1)
@@ -62,7 +62,7 @@ class Attendee_Tests(TestCase):
         user2.first_name = "Hermione"
         user2.last_name = "Granger"
         user2.save()
-        Event.objects.create_event("Quittich Pitch", "2021-04-20", 1, 0, user1, 1 )
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
         event1 = Event.objects.get(id=1)
         TripAttendees.objects.create_attendee(event1, user2)
         pass

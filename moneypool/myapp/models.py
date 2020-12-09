@@ -7,8 +7,8 @@ import secrets
 
 # Create your models here.
 class EventManager(models.Manager):
-    def create_event(self, location, date, attendants, invited, author, public ):
-        event = self.create(location=location, date=date, attendants=attendants, invited=invited, author=author, public=public)
+    def create_event(self, location, date, invited, author, public ):
+        event = self.create(location=location, date=date, attendants=1, invited=invited, author=author, public=public)
         return event
     def create_attendee(self, tripid, userid):
         attendee = self.create(tripid=tripid, userid=userid)

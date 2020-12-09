@@ -463,12 +463,12 @@ def populateTrips(request):
 
     all_users = User.objects.all()
     #### TRIPS ####
-    trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 1, 0, all_users[0], 1 )
-    trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 1, 0, all_users[0], 1 )
-    trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 1, 0, all_users[3], 1 )
-    trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 1, 0, all_users[1], 1 )
-    trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 1, 0, all_users[1], 1 )
-    trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 1, 0, all_users[2], 1 )
+    trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, all_users[0], 1 )
+    trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 0, all_users[0], 1 )
+    trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 0, all_users[3], 1 )
+    trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 0, all_users[1], 1 )
+    trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 0, all_users[1], 1 )
+    trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 0, all_users[2], 1 )
 
     return redirect("/login")
 

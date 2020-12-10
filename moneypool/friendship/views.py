@@ -2,8 +2,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, HttpResponseRedirect
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 
-from friendship.exceptions import AlreadyExistsError
+from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
 from friendship.models import Block, Follow, Friend, FriendshipRequest
 
 try:
@@ -51,16 +52,25 @@ def friendship_add_friend(
     if request.method == "POST":
         to_user = user_model.objects.get(username=to_username)
         from_user = request.user
+               
+        context = {
+            "message": "",
+            "reason": "Error adding friend"
+        }
         try:
             Friend.objects.add_friend(from_user, to_user)
-        except AlreadyExistsError as e:
-            ctx["errors"] = ["%s" % e]
-            messages.error(request, "%s" % e)
+        except AlreadyExistsError:
+            context.message = "Friendship already requested!"
+            return render(request, "error.html", context)
+        except AlreadyFriendsError as e:
+            context["message"] = e.error
+            context["reason"] = e.message
+            return render(request, "error.html", context)
+        except ValidationError:
+            context.message = "You can't be friends with yourself!"
+            return render(request, "error.html", context)
         else:
-            messages.success(request, "Friend Request Sent!")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
+            return render(request, template_name, ctx)
 
 
 @login_required

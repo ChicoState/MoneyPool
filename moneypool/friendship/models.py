@@ -311,14 +311,18 @@ class FriendshipManager(models.Manager):
 
     def add_friend(self, from_user, to_user, message=None):
         """ Create a friendship request """
+        error = ""
         if from_user == to_user:
-            raise ValidationError("Users cannot be friends with themselves")
+            error = "Users cannot be friends with themselves"
+            raise ValidationError(error)
 
         if self.are_friends(from_user, to_user):
-            raise AlreadyFriendsError("Users are already friends")
+            error = "Users " + to_user.username + " and " + from_user.username + " are already friends"
+            raise AlreadyFriendsError(error)
 
         if self.can_request_send(from_user, to_user):
-            raise AlreadyExistsError("Friendship already requested")
+            error = "Friendship already requested"
+            raise AlreadyExistsError(error)
 
         if message is None:
             message = ""

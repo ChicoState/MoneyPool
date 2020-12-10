@@ -5,8 +5,10 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from friendship.models import Friend, Follow, Block
+from friendship.exceptions import AlreadyExistsError, AlreadyFriendsError
+from django.core.exceptions import ValidationError
 
-
+from myapp.exceptions import alreadyAttending
 from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
@@ -15,26 +17,53 @@ import datetime #for testing mytrips
 import random
 # Create your views here.
 
+def error_view(request):
+    message = "Error adding friend"
+    reason = "Cannot be friends with yourself"
+    context = {
+        "message": message,
+        "reason": reason
+    }
+    return render(request, "error.html", context=context)
+
 def sendFR(request, id):
     ctx = {"to_username": to_username}
 
     if request.method == "POST":
         to_user = user_model.objects.get(username=to_username)
         from_user = request.user
+        
+        context = {
+            "message": "",
+            "error": "Error adding friend"
+        }
         try:
             Friend.objects.add_friend(from_user, to_user)
-        except AlreadyExistsError as e:
-            ctx["errors"] = ["%s" % e]
+        except AlreadyExistsError:
+            context["message"] = "Friendship already requested!"
+            return render(request, "error.html", context)
+        except AlreadyFriendsError:
+            context["message"] = "You are already friends!"
+            return render(request, "error.html", context)
+        except ValidationError:
+            context["message"] = "You can't be friends with yourself!"
+            return render(request, "error.html", context)
         else:
-            return redirect("friendship_request_list")
-
-    return render(request, template_name, ctx)
+            return render(request, template_name, ctx)
 
 def joinTrip(request, id):
     if request.method == "POST":
         trip = models.Event.objects.get(id=id)
-        models.TripAttendees.objects.create_attendee(trip, request.user)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        try:
+            models.TripAttendees.objects.create_attendee(trip, request.user)
+        except alreadyAttending as e:
+            context = {
+                "message":e.error,
+                "reason" :e.message
+            }
+            return render(request, "error.html", context=context)
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def cancelJoin(request, id):
     if request.method == "POST":

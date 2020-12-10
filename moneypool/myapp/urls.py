@@ -9,6 +9,7 @@ app_name = 'suggestions'
 urlpatterns = [
     path('', views.index),
     path('login/', auth_views.LoginView.as_view()),
+    path('error/', views.error_view,), #remove this: testing only
     path('logout/', views.logout_view),
     path('register/', views.register),
     path('index/', views.index),

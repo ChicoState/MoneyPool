@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 import secrets
+from myapp.exceptions import alreadyAttending, alreadyInvited
 
 #AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
 
@@ -11,11 +12,23 @@ class EventManager(models.Manager):
         event = self.create(location=location, date=date, attendants=attendants, invited=invited, author=author, public=public)
         return event
     def create_attendee(self, tripid, userid):
+        allattendees = TripAttendees.objects.all()
+        for a in allattendees:
+            if a.tripid.id == tripid.id:
+                if a.userid.id == userid.id:
+                    error = "The user '" + userid.username + "' is already attending trip '" + tripid.location + "'"
+                    raise alreadyAttending(error)
         attendee = self.create(tripid=tripid, userid=userid)
         tripid.attendants += 1
         tripid.save()
         return attendee
     def create_trip_invite(self, tripid, from_user, to_user):
+        allinvites = TripInviteRequest.objects.all()
+        for a in allattendees:
+            if a.tripid.id == tripid.id:
+                if a.to_user.id == to_user.id:
+                    error = "The user '" + userid.username + "' has already been invited on trip '" + tripid.location + "'"
+                    raise alreadyinvited(error)
         invite = self.create(tripid=tripid, from_user=from_user, to_user=to_user)
         return invite
 

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from myapp.models import Event, TripAttendees
+from myapp.models import Event, TripAttendees, TripInviteRequest
 from django.contrib.auth.models import User
 
 #To run the tests, use the command: python manage.py test myapp/
@@ -39,7 +39,7 @@ class EventModelTest(TestCase):
     
     #Ensure number of attendees is stored correctly as 1 by default
     def test_attendees(self):
-        print("Method: test_attendees")
+        print("Method: test_attendees_on_event_create")
         trip1 = Event.objects.get(id=1)
         att = trip1.attendants
         self.assertEqual(att, 1)
@@ -47,9 +47,7 @@ class EventModelTest(TestCase):
 
     
 class Attendee_Tests(TestCase):
-    #Put this function in every test class
-    #It is meant to set up the initial test objects
-    #It will only run one time, as opposed to every time a test is called
+    #setup function
     def setUpTestData():
         print("setUpTestData: Run once to set up non-modified data for all class methods.")
         User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
@@ -67,19 +65,81 @@ class Attendee_Tests(TestCase):
         TripAttendees.objects.create_attendee(event1, user2)
         pass
 
-    #All test functions go below here.... 
-    #Each function must start with the word 'test' or it wont work
-
     #Ensure number of attendees is incremented when someone joins a trip
     def test_attendees(self):
-        print("Method: test_attendees")
+        print("Method: test_attendees_on_join_trip")
         trip1 = Event.objects.get(id=1)
         att = trip1.attendants
+
         self.assertEqual(att, 2)
 
-    def test_cancel_attendees(self):
-        print("Method: test_cancel_attendees")
+    #Ensure number of attendees in a trip is decremented when someone leaves
+    def test_cancel_attendee(self):
+        print("Method: test_attendees_on_leave_trip")
         attendee1 = TripAttendees.objects.get(id=1)
         attendee1.remove(1)
         trip1 = Event.objects.get(id=1)
         self.assertEqual(trip1.attendants, 1)
+
+    #Ensure they are marked to attend the correct trip
+    def test_attending_correct_trip(self):
+        print("Method: Is attending correct trip?")
+        attendee1 = TripAttendees.objects.get(id=1)
+        tripID = attendee1.tripid.id
+        self.assertEqual(tripID, 1)
+
+class TripIR_Tests(TestCase):
+    #setup function
+    def setUpTestData():
+        print("setUpTestData: Run once to set up non-modified data for all class methods.")
+        User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        User.objects.create_user(username='rweasley', email='rweasley@hogwarts.com', password='123!@#123')        
+        user1 = User.objects.get(id=1)
+        user2 = User.objects.get(id=2)
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Ron"
+        user2.last_name = "Weasley"
+        user2.save()
+        trip1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        TripInviteRequest.objects.create_trip_invite(trip1, user1, user2)
+        pass
+
+    #Tests that the invite request is assigned the correct variables
+    def test_assigned_variables(self):
+        print("Method: test_assigned_variables")
+        trip1 = Event.objects.get(id=1)
+        user1 = User.objects.get(id=1)
+        user2 = User.objects.get(id=2)
+        invite1 = TripInviteRequest.objects.get(id=1)
+        self.assertEqual(invite1.from_user.id, user1.id)
+        self.assertEqual(invite1.to_user.id, user2.id)
+        self.assertEqual(invite1.tripid.id, trip1.id)
+    
+    #Tests that when trip invite request is accepted
+    #The request is deleted from the database and a new entry is 
+    #Added in Attendees
+    def test_accept_request(self):
+        print("Method: test_accept_trip_request")
+        invite1 = TripInviteRequest.objects.get(id=1)
+        invite1.accept()
+        try:
+            attendees = TripAttendees.objects.get(id=1)
+        except:
+            print("Error: Attendee not added on accept_trip_request")
+            self.assertFalse(True)
+        
+        try:
+            invites = TripInviteRequest.objects.get(id=1)
+            #if reaches here, invite was not deleted
+            print("Error: invite request not deleted")
+            self.assertFalse(True)
+        except:
+            print("There are no invites")
+            self.assertTrue(True)
+        
+
+        
+
+

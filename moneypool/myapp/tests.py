@@ -1,5 +1,5 @@
-from django.test import TestCase
-from myapp.models import Event, TripAttendees, TripInviteRequest
+from django.test import TestCase, Client
+from myapp.models import Event, TripAttendees, TripInviteRequest, Question, Choice
 from friendship.models import Friend, FriendshipRequest
 from django.contrib.auth.models import User
 
@@ -44,6 +44,8 @@ class EventModelTest(TestCase):
         trip1 = Event.objects.get(id=1)
         att = trip1.attendants
         self.assertEqual(att, 1)
+
+
 
 
     
@@ -108,8 +110,8 @@ class TripIR_Tests(TestCase):
         pass
 
     #Tests that the invite request is assigned the correct variables
-    def test_assigned_variables(self):
-        print("----Test: test_assigned_variables")
+    def test_assigned_variables_invite_req(self):
+        print("----Test: test_assigned_variables_invite_req")
         trip1 = Event.objects.get(id=1)
         user1 = User.objects.get(id=1)
         user2 = User.objects.get(id=2)
@@ -117,6 +119,7 @@ class TripIR_Tests(TestCase):
         self.assertEqual(invite1.from_user.id, user1.id)
         self.assertEqual(invite1.to_user.id, user2.id)
         self.assertEqual(invite1.tripid.id, trip1.id)
+
     
     #Tests that when trip invite request is accepted
     #The request is deleted from the database and a new entry is 
@@ -236,19 +239,88 @@ class Friends(TestCase):
         except:
             #Test should reach here
             self.assertTrue(True)   
-
-
-
-
-    
 #Test Questions
+class Questions_Choices_Voting(TestCase):
+    #setup function
+    def setUpTestData():
+        print("Setting up Questions tests.")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        evt1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        q = Question.objects.create(question_text="Where are we eating?", end_date="2021-02-28", tripId=evt1, category="Food")
+        choice1 = Choice.objects.create(question=q, choice_text="Taco Bell", votes=2,cost=10.20)     
+        choice2 = Choice.objects.create(question=q, choice_text="McDonalds", votes=1,cost=9.20)   
+        choice3 = Choice.objects.create(question=q, choice_text="Chipotle", votes=3,cost=12.20)            
+        pass
 
-#Test Choices
+    def test_assigned_variables(self):
+        print("----Test: test_assigned_variables")
+        q1 = Question.objects.get(id=1)          
+        self.assertEqual(q1.category, "Food")  #tied to proper category
+        self.assertEqual(q1.tripId.id, 1)      #tied to proper trip
+        self.assertEqual(q1.question_text, "Where are we eating?") 
 
-#Test voting functions
+    def test_check_choices(self):
+        print("----Test: create_choices")
+        c1 = Choice.objects.get(id=1) 
+        c2 = Choice.objects.get(id=2) 
+        c3 = Choice.objects.get(id=3)                 
+        self.assertEqual(c1.question.tripId.id, 1)  #tied to proper trip
+        self.assertEqual(c2.choice_text, "McDonalds")      #tied to proper trip
+        self.assertEqual(str(c3.cost), '12.20') 
+        cost = c1.cost + c2.cost + c3.cost
+        self.assertEqual(str(cost), '31.60') #test costs
 
-#Test Function to choose winning vote  
+    def test_set_winner(self):
+        print("----Test: set_winner")
+        c3 = Choice.objects.get(id=3)   
+        q1 = Question.objects.get(id=1) 
+        q1.updateChoice(c3.choice_text, 3)       
+        self.assertEqual(q1.result, "Chipotle")  #set proper winner
+        self.assertEqual(q1.resultID, 3) 
+           
 
-        
+class Login_Profile_URLs(TestCase):
+    def setUpTestData():
+        print("Setting up Login and Profile Url tests.")
+        User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user1 = User.objects.get(id=1)
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        pass #This is the part that makes the function only run once
 
 
+    #TEST LOGIN
+    def test_correct_login(self):
+        print("----Test: testing correct login")
+        c = Client()
+        response = c.post('/login/', {'username':'hpotter', 'password': '123!@#123'}, follow=True)
+        success = c.login(username='hpotter', password='123!@#123')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(success, True)
+
+    def test_incorrect_login_username(self):
+        print("----Test: test incorrect login username")
+        c = Client()
+        success = c.login(username='hgranger', password='123!@#123')
+        self.assertEqual(success, False)
+
+    def test_incorrect_login_password(self):
+        print("----Test: test incorrect login password")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#122')
+        self.assertEqual(success, False)
+
+    #Test content passed to view based on logged in user
+    def test_correct_profile_content(self):
+        print("----Test: test correct profile content")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/profile/')
+        result = response.context['data']
+        self.assertEqual(result[0]['location'], "Quittich Pitch")
+    

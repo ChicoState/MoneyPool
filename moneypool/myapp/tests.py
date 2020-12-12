@@ -239,6 +239,12 @@ class Friends(TestCase):
         except:
             #Test should reach here
             self.assertTrue(True)   
+
+    def tearDown(self):
+        user1 = User.objects.get(id=1)
+        user2 = User.objects.get(id=2)
+        Friend.objects.remove_friend(user1, user2)
+
 #Test Questions
 class Questions_Choices_Voting(TestCase):
     #setup function
@@ -293,7 +299,6 @@ class Login_Profile_URLs(TestCase):
         Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
         pass #This is the part that makes the function only run once
 
-
     #TEST LOGIN
     def test_correct_login(self):
         print("----Test: testing correct login")
@@ -321,6 +326,276 @@ class Login_Profile_URLs(TestCase):
         c = Client()
         success = c.login(username='hpotter', password='123!@#123')
         response = c.get('/profile/')
-        result = response.context['data']
-        self.assertEqual(result[0]['location'], "Quittich Pitch")
+        mytrips = response.context['data']
+        first_name = response.context['name']
+        friend_reqs = response.context['fromreqs']
+        attending_list = response.context['attending']
+        self.assertEqual(mytrips[0]['location'], "Quittich Pitch")
+        self.assertEqual(first_name, "Harry")
+        self.assertFalse(friend_reqs)
+        self.assertFalse(attending_list)
+
+
     
+class Profile_view(TestCase):
+    def setUpTestData():
+        print("Setting up Profile Url tests.")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user3 = User.objects.create_user(username="rweasley", email="rweasley@hogwarts.com", password='123!@#123')        
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        user3.first_name = "Ron"
+        user3.last_name = "Weasley"
+        user3.save()
+        event1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user2, 1 )
+        event2 = Event.objects.create_event("Snape's Office", "2021-06-20", 0, user3, 1 )
+        TripAttendees.objects.create_attendee(event1, user1)   
+        Friend.objects.add_friend(user2, user1)
+        TripInviteRequest.objects.create_trip_invite(event2, user3, user1)
+        pass #This is the part that makes the function only run once    
+
+    #Test content passed to view based on logged in user
+    def test_correct_profile_content(self):
+        print("----Test: test correct profile content")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/profile/')
+        mytrips = response.context['data']
+        first_name = response.context['name']
+        friend_reqs = response.context['fromreqs']
+        attending_list = response.context['attending']
+        trip_invites = response.context['tripInvites']
+        self.assertFalse(mytrips)
+        self.assertEqual(first_name, "Harry")
+        self.assertTrue(friend_reqs)
+        self.assertTrue(attending_list)  
+        self.assertEqual(attending_list[0]["location"], "Quittich Pitch")  
+        self.assertTrue(trip_invites)
+        self.assertEqual(trip_invites[0]["name"], "Snape's Office")  
+    
+    #Test content passed to another users view not friends
+    def test_correct_other_profile_content(self):
+        print("----Test: test correct profile content for non-logged in user")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/profile/2')
+        trips = response.context['data']
+        first_name = response.context['name']
+        arefriends = response.context['arefriends']
+        self.assertFalse(arefriends)
+        self.assertTrue(trips)
+        self.assertEqual(trips[0]["location"], "Quittich Pitch")
+        self.assertEqual(first_name, "Hermione")
+
+class Trip_Details_View(TestCase):
+    def setUpTestData():
+        print("Setting up Trip_Details_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user3 = User.objects.create_user(username="rweasley", email="rweasley@hogwarts.com", password='123!@#123')        
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        user3.first_name = "Ron"
+        user3.last_name = "Weasley"
+        user3.save()
+        event1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user2, 1 )
+        pass #This is the part that makes the function only run once            
+
+     #Test content passed to trip_details view
+    def test_correct_content(self):
+        print("----Test: test correct trip content right after trip creation")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/tripdetails/1/')
+        title = response.context['title']
+        attendants = response.context['attendeesCount']
+        isauthor = response.context['isauthor']
+        self.assertFalse(isauthor)
+        self.assertEqual(title, "Quittich Pitch")
+        self.assertEqual(attendants, 1)  
+
+    #Ensure correct attendee count on page when someone joins a trip
+    def test_correct_content_2(self):
+        print("----Test: test correct attendee count")
+        event1 = Event.objects.get(id=1)
+        user1 = User.objects.get(id=1)
+        TripAttendees.objects.create_attendee(event1, user1)   
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/tripdetails/1/')
+        attendants = response.context['attendeesCount']
+        self.assertEqual(attendants, 2)  
+
+    #Ensure trip owner is correct (to show link to invite friends)
+    def test_correct_content_3(self):
+        print("----Test: test owner of the trip")
+        c = Client()
+        success = c.login(username='hgranger', password='123!@#123')
+        response = c.get('/tripdetails/1/')
+        attendants = response.context['attendeesCount'] 
+        isauthor = response.context['isauthor']
+        self.assertTrue(isauthor)        
+
+class Search_Users_View(TestCase):
+    def setUpTestData():
+        print("Setting up Search_Users_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user3 = User.objects.create_user(username="rweasley", email="rweasley@hogwarts.com", password='123!@#123')        
+        user4 = User.objects.create_user(username="dmalfoy", email="dmalfoy@hogwarts.com", password='123!@#123')
+        user5 = User.objects.create_user(username="adumbeldoor", email="adumbeldoor@hogwarts.com", password='123!@#123')        
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        user3.first_name = "Ron"
+        user3.last_name = "Weasley"
+        user3.save()
+        user4.first_name = "Draco"
+        user4.last_name = "Malfoy"
+        user4.save()
+        user5.first_name = "Albus"
+        user5.last_name = "Dumbeldoor"
+        user5.save()
+        pass
+
+    def test_check_users(self):
+        print("----Test: test all users show up except logged in user")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/findUsers/')
+        userlist = response.context['user_list'] 
+        self.assertEqual(len(userlist), 4)
+
+
+class Find_Trips_View(TestCase):
+    def setUpTestData():
+        print("Setting up Search_Users_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user3 = User.objects.create_user(username="rweasley", email="rweasley@hogwarts.com", password='123!@#123')        
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        user3.first_name = "Ron"
+        user3.last_name = "Weasley"
+        user3.save()
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        Event.objects.create_event("Astronomy Tower", "2021-04-20", 0, user2, 0 )
+        Event.objects.create_event("Gryffindoor Commonroom", "2021-04-20", 0, user3, 0 )
+        Event.objects.create_event("Snape's Office", "2021-04-20", 0, user2, 1 )
+        Event.objects.create_event("Lupin's Office", "2021-04-20", 0, user1, 1 )
+        Event.objects.create_event("Hagrid's House", "2021-04-20", 0, user3, 1 )
+        pass
+
+    def test_check_public_trips(self):
+        print("----Test: test all public trips show up not from user")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/viewtrips/')
+        triplist = response.context['data'] 
+        self.assertEqual(len(triplist), 2) #only 2 trips not from user are public
+
+class Category_Page_View(TestCase):
+    def setUpTestData():
+        print("Setting up Category_Page_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        pass
+
+    def test_check_owner_view(self):
+        print("----Test: test owner can add suggestions")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/tripdetails/1/categoryPage/1/') #traveling
+        category = response.context['catTitle'] 
+        tripName = response.context['name']
+        isowner = response.context['owner']
+        self.assertEqual(tripName, "Quittich Pitch") 
+        self.assertEqual(category, "Traveling")
+        self.assertTrue(isowner)
+
+    def test_check_not_owner_view(self):
+        print("----Test: test non-owner cannot add suggestions")
+        c = Client()
+        success = c.login(username='hgranger', password='123!@#123')
+        response = c.get('/tripdetails/1/categoryPage/1/') #traveling
+        category = response.context['catTitle'] 
+        tripName = response.context['name']
+        isowner = response.context['owner']
+        self.assertEqual(tripName, "Quittich Pitch") 
+        self.assertEqual(category, "Traveling")
+        self.assertFalse(isowner)
+
+class Add_Trip_Form_View(TestCase):
+    def setUpTestData():
+        print("Setting up Add_Trip_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username="hgranger", email="hgranger@hogwarts.com", password='123!@#123')
+        user3 = User.objects.create_user(username="rweasley", email="rweasley@hogwarts.com", password='123!@#123')        
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()
+        user3.first_name = "Ron"
+        user3.last_name = "Weasley"
+        user3.save()
+        fr1 = Friend.objects.add_friend(user1, user2)
+        fr2 = Friend.objects.add_friend(user1, user3)
+        fr1.accept()
+        fr2.accept()
+        pass
+
+    def test_check_friends_display(self):
+        print("----Test: check that all user's friends are displayed to invite")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/addtrip/')
+        friends = response.context['friends'] 
+        self.assertEqual(len(friends), 2)
+
+    #Tests the create_trip form as well as inviting friends on a new trip
+    def test_form_works(self):
+        print("----Test: check that all user's friends are displayed to invite")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.post('/addtrip/', {"location":"home", "date_month": "1", "date_day": "1", "date_year": "2022", "public": "on", "hgranger": "hgranger"})
+        response2 = c.get('/profile/')
+        tir = TripInviteRequest.objects.get(id=1)
+        trips = response2.context['data'] 
+        self.assertEqual(len(trips), 1)
+        self.assertEqual(trips[0]["location"], "home")
+        self.assertEqual(tir.tripid.location, "home")
+        self.assertEqual(tir.from_user.id, 1)
+        self.assertEqual(tir.to_user.id, 2)
+    
+
+    def tearDown(self):
+        user1 = User.objects.get(id=1)
+        user2 = User.objects.get(id=2)
+        user3 = User.objects.get(id=3)
+        Friend.objects.remove_friend(user1, user2)
+        Friend.objects.remove_friend(user1, user3)

@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from myapp.models import Event, TripAttendees, TripInviteRequest, Question, Choice
 from friendship.models import Friend, FriendshipRequest
 from django.contrib.auth.models import User
+from datetime import datetime
 
 #To run the tests, use the command: python manage.py test myapp/
 
@@ -255,7 +256,7 @@ class Questions_Choices_Voting(TestCase):
         user1.last_name = "Potter"
         user1.save()
         evt1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
-        q = Question.objects.create(question_text="Where are we eating?", end_date="2021-02-28", tripId=evt1, category="Food")
+        q = Question.objects.create(question_text="Where are we eating?", tripId=evt1, category="Food")
         choice1 = Choice.objects.create(question=q, choice_text="Taco Bell", votes=2,cost=10.20)     
         choice2 = Choice.objects.create(question=q, choice_text="McDonalds", votes=1,cost=9.20)   
         choice3 = Choice.objects.create(question=q, choice_text="Chipotle", votes=3,cost=12.20)            
@@ -307,6 +308,12 @@ class Login_Profile_URLs(TestCase):
         success = c.login(username='hpotter', password='123!@#123')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(success, True)
+
+    def test_cant_access_profile(self):
+        print("----Test: testing unlogged in user trying to access profile")
+        c = Client()
+        response = c.get('/profile/')
+        self.assertEqual(response.status_code, 302) #redirected to login
 
     def test_incorrect_login_username(self):
         print("----Test: test incorrect login username")
@@ -599,3 +606,111 @@ class Add_Trip_Form_View(TestCase):
         user3 = User.objects.get(id=3)
         Friend.objects.remove_friend(user1, user2)
         Friend.objects.remove_friend(user1, user3)
+
+class Join_Trip_View(TestCase):
+    def setUpTestData():
+        print("Setting up Join_Trip_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username='hgranger', email='hgranger@hogwarts.com', password='123!@#123')
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()       
+        Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        pass
+
+    def test_join_trip(self):
+        print("----Test: check that users can successfully join a public trip")
+        c = Client()
+        success = c.login(username='hgranger', password='123!@#123')
+        response = c.post('/joinTrip/1/') 
+        attendees = TripAttendees.objects.get(id=1)
+        self.assertTrue(attendees)
+        self.assertEqual(attendees.userid.id, 2)
+
+    def test_cancel_join_trip(self):
+        print("----Test: check that users can successfully unjoin a trip")
+        c = Client()
+        success = c.login(username='hgranger', password='123!@#123')
+        response = c.post('/joinTrip/1/') 
+        response2 = c.post('/cancelJoin/1/')
+        attendees = TripAttendees.objects.all()
+        self.assertFalse(attendees)
+
+class Create_Suggestion_View(TestCase):
+    def setUpTestData():
+        print("Setting up Create_Suggestion_View Tests")
+        user1 = User.objects.create_user(username='hpotter', email='hpotter@hogwarts.com', password='123!@#123')
+        user2 = User.objects.create_user(username='hgranger', email='hgranger@hogwarts.com', password='123!@#123')
+        user1.first_name = "Harry"
+        user1.last_name = "Potter"
+        user1.save()
+        user2.first_name = "Hermione"
+        user2.last_name = "Granger"
+        user2.save()       
+        event1 = Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, user1, 1 )
+        TripAttendees.objects.create_attendee(event1, user2)
+        pass
+
+    def test_create_suggestion_trip(self):
+        print("----Test: check that trip owners can successfully create a suggestion")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        response = c.get('/addSuggestion/1/1/') #go to form page
+        #create a suggestion
+        response2 = c.post('/addSuggestion/1/1/', {"question_text":"Where are we going the first night?", "end_date_month":2, "end_date_day":3, "end_date_year":2022})
+        questions = Question.objects.all()
+        self.assertTrue(questions)
+        self.assertEqual(questions[0].question_text, "Where are we going the first night?")
+
+    def test_create_suggestion_trip(self):
+        print("----Test: check that trip owners can successfully create a choice")
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        #create a suggestion
+        response2 = c.post('/addSuggestion/1/1/', {"question_text":"Where are we going the first night?", "end_date_month":2, "end_date_day":3, "end_date_year":2022})
+        questions = Question.objects.get(id=1)
+        c.post('/addChoice/1/', {"choice_text":"Taco Bell", "cost":23.20})
+        c.post('/addChoice/1/', {"choice_text":"McDonalds", "cost":22.50})
+        choices = Choice.objects.all()
+        self.assertEqual(len(choices), 2)
+        self.assertEqual(choices[0].choice_text, "Taco Bell")
+        self.assertEqual(str(choices[0].cost), "23.20")
+        self.assertEqual(choices[1].choice_text, "McDonalds")
+        self.assertEqual(choices[0].question.id, 1)
+
+    def test_vote_on_suggestion(self):
+        print("----Test: check that trip attendees can successfully vote on a choice")  
+        c = Client()
+        success = c.login(username='hpotter', password='123!@#123')
+        #create a suggestion
+        response2 = c.post('/addSuggestion/1/1/', {"question_text":"Where are we going the first night?", "end_date_month":2, "end_date_day":3, "end_date_year":2022})
+        questions = Question.objects.get(id=1)
+        c.post('/addChoice/1/', {"choice_text":"Taco Bell", "cost":23.20})
+        c.post('/addChoice/1/', {"choice_text":"McDonalds", "cost":22.50})      
+        success = c.logout()
+        d = Client()
+        success = d.login(username='hgranger', password='123!@#123')  
+        request = d.get('/displaysuggestion/1/')
+        sugg = request.context['question'] 
+        qs = request.context['Data']
+        self.assertEqual(sugg.question_text, "Where are we going the first night?")
+        self.assertEqual(len(qs), 2)
+        choice = Choice.objects.get(id=1)
+        choice.votes = 2
+        choice.save()
+        self.assertEqual(choice.votes, 2)
+        d.logout()
+        c.login(username='hpotter', password='123!@#123')
+        c.post('/endvote/1/')
+        questions = Question.objects.get(id=1)
+        self.assertEqual(questions.resultID, 1)
+        
+
+
+
+
+
+        

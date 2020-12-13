@@ -15,21 +15,6 @@ import datetime #for testing mytrips
 import random
 # Create your views here.
 
-def sendFR(request, id):
-    ctx = {"to_username": to_username}
-
-    if request.method == "POST":
-        to_user = user_model.objects.get(username=to_username)
-        from_user = request.user
-        try:
-            Friend.objects.add_friend(from_user, to_user)
-        except AlreadyExistsError as e:
-            ctx["errors"] = ["%s" % e]
-        else:
-            return redirect("friendship_request_list")
-
-    return render(request, template_name, ctx)
-
 def joinTrip(request, id):
     if request.method == "POST":
         trip = models.Event.objects.get(id=id)
@@ -434,43 +419,43 @@ def findUsers(request):
 
 
 
-#Script to populate tables with users and trips
-def populateUsers(request):
-    #### USERS ####
-    user1 = User.objects.create_user('hpotter', 'hpotter@hogwarts.com', '123!@#123')
-    user1.first_name = "Harry"
-    user1.last_name = "Potter"
-    user1.save()
+# #Script to populate tables with users and trips
+# def populateUsers(request):
+#     #### USERS ####
+#     user1 = User.objects.create_user('hpotter', 'hpotter@hogwarts.com', '123!@#123')
+#     user1.first_name = "Harry"
+#     user1.last_name = "Potter"
+#     user1.save()
 
-    user2 = User.objects.create_user('hgranger', 'hgranger@hogwarts.com', '123!@#123')
-    user2.first_name = "Hermione"
-    user2.last_name = "Granger"
-    user2.save()
+#     user2 = User.objects.create_user('hgranger', 'hgranger@hogwarts.com', '123!@#123')
+#     user2.first_name = "Hermione"
+#     user2.last_name = "Granger"
+#     user2.save()
 
-    user3 = User.objects.create_user('dmalfoy', 'dmalfoy@hogwarts.com', '123!@#123')
-    user3.first_name = "Draco"
-    user3.last_name = "Malfoy"
-    user3.save()
+#     user3 = User.objects.create_user('dmalfoy', 'dmalfoy@hogwarts.com', '123!@#123')
+#     user3.first_name = "Draco"
+#     user3.last_name = "Malfoy"
+#     user3.save()
 
-    user4 = User.objects.create_user('rweasley', 'rweasley@hogwarts.com', '123!@#123')
-    user4.first_name = "Ronald"
-    user4.last_name = "Weasley"
-    user4.save()
+#     user4 = User.objects.create_user('rweasley', 'rweasley@hogwarts.com', '123!@#123')
+#     user4.first_name = "Ronald"
+#     user4.last_name = "Weasley"
+#     user4.save()
 
-    return redirect("/login")
+#     return redirect("/login")
 
-def populateTrips(request):
+# def populateTrips(request):
 
-    all_users = User.objects.all()
-    #### TRIPS ####
-    trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 1, 0, all_users[0], 1 )
-    trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 1, 0, all_users[0], 1 )
-    trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 1, 0, all_users[3], 1 )
-    trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 1, 0, all_users[1], 1 )
-    trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 1, 0, all_users[1], 1 )
-    trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 1, 0, all_users[2], 1 )
+#     all_users = User.objects.all()
+#     #### TRIPS ####
+#     trip1 = models.Event.objects.create_event("Quittich Pitch", "2021-04-20", 0, all_users[0], 1 )
+#     trip2 = models.Event.objects.create_event("Dumbledoor's Office", "2021-03-20", 0, all_users[0], 1 )
+#     trip3 = models.Event.objects.create_event("Lavender's House", "2021-03-23", 0, all_users[3], 1 )
+#     trip4 = models.Event.objects.create_event("The Library", "2021-02-28", 0, all_users[1], 1 )
+#     trip5 = models.Event.objects.create_event("Hagrid's House", "2021-07-15", 0, all_users[1], 1 )
+#     trip6 = models.Event.objects.create_event("Snape's Office", "2021-05-28", 0, all_users[2], 1 )
 
-    return redirect("/login")
+#     return redirect("/login")
 
 #function to accept a trip request
 def acceptTripReq(request, id):

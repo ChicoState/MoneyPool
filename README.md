@@ -15,13 +15,25 @@ Developers:
 
 ### Setting up the Web App   
 * Step 4: Type the command 'docker-compose run web /bin/bash' to run the environment that was set up
-* Step 5: Once in the environment, type 'python moneypool/manage.py makemigrations'
-* Step 6: Once migrations are made, type 'python moneypool/manage.py migrate'
-* Step 7: Exit from the environment by typing 'exit'
+* Step 5: Once in the environment, type 'python moneypool/manage.py makemigrations'   
+* Step 6: Once migrations are made, type 'python moneypool/manage.py migrate'   
+* Step 7: Exit from the environment by typing 'exit'   
 
 ### Running the Web App   
-* Step 8: Run 'sudo docker-compose up'
-* Step 9: Open a web browser and enter the url 'localhost:8000'
+* Step 8: Run 'sudo docker-compose up'   
+* Step 9: Open a web browser and enter the url 'localhost:8000'   
+
+### Testing the Web App   
+* Step 10: From the home project directory, type 'docker-compose run web /bin/bash'   
+* Step 11: Type 'cd moneypool'   
+* Step 12: python manage.py test   
+
+### Testing Coverage on the Web App
+* Step 13: From the home project directory, type 'docker-compose run web /bin/bash'   
+* Step 14: Type pip install coverage   
+* Step 15: Type 'cd moneypool'   
+* Step 16: Type 'coverage run --source='.' manage.py test myapp'   
+* Step 17: Type 'coverage report -m   
 
 # Contribution Guide   
 * Create Registration/Login functionality

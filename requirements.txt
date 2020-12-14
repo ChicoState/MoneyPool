@@ -1,6 +1,8 @@
 asgiref==3.2.10
-coverage==5.3
+click==7.1.2
 Django==3.1.1
 django-friendship==1.9.1
+lcom==0.1.0
 pytz==2019.2
 sqlparse==0.3.0
+terminaltables==3.1.0
